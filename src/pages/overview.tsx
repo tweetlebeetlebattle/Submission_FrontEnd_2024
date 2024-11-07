@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import overviewDive from '../media/overviewDive.webp';
-import overviewLifting from '../media/overviewLifting.webp';
+import overviewDive from '../media/images/overviewDive.webp';
+import overviewLifting from '../media/images/overviewLifting.webp';
 import OnboardingModal from '../modal/onboardingModal';
 
 const Overview = () => {
+    // block onboarding modal if userInfo is set
+
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [direction, setDirection] = useState<string | null>(null);
 
     const handleClick = (side: string) => {
         setIsModalVisible(true);
         if (side === 'Left') {
-            setDirection('diverOverview');
+            setDirection('diver-overview');
         } else {
-            setDirection('weightlifterOverview');
+            setDirection('weightlifter-overview');
         }
     };
     return (

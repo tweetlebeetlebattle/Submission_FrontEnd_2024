@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import loginBackground from '../media/loginBackground.webp';
-import registerBackground from '../media/registerBackground.webp';
+import loginBackground from '../media/images/loginBackground.webp';
+import registerBackground from '../media/images/registerBackground.webp';
 
-const Onboarding = () => {
+interface OnboardingProps {
+    direction?: string; 
+}
+
+const Onboarding: React.FC<OnboardingProps> = ({ direction }) => {
     const navigate = useNavigate();
 
     const [registerCredentials, setRegisterCredentials] = useState({
@@ -150,7 +154,6 @@ const Onboarding = () => {
     );
 };
 
-// Styles with explicit types
 const containerStyle: React.CSSProperties = {
     display: 'flex',
     height: '100vh',
