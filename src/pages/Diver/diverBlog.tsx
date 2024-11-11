@@ -1,4 +1,8 @@
+// DiverBlog.tsx
 import React, { useState } from 'react';
+import SearchBar from '../../components/SearchBar';
+import Blog from '../../components/Blog';
+import BlogDefaultDisplay from '../../components/BlogDefaultDisplay';
 
 interface Comment {
   id: number;
@@ -33,88 +37,60 @@ const blogPostsData: BlogPost[] = [
         timestamp: '2023-11-10T13:00:00Z',
         imageUrl: 'https://via.placeholder.com/100',
       },
+      {
+        id: 2,
+        text: 'Looking forward to reading more!',
+        username: 'AliceB',
+        timestamp: '2023-11-10T14:00:00Z',
+      },
     ],
   },
-  // Additional sample posts can be added here
+  {
+    id: 2,
+    username: 'AliceB',
+    text: "Here's something new I learned about sustainable diving practices.",
+    timestamp: '2023-11-11T15:00:00Z',
+    imageUrl: 'https://via.placeholder.com/150',
+    comments: [
+      {
+        id: 3,
+        text: "That's really insightful, thanks for sharing!",
+        username: 'JaneDoe',
+        timestamp: '2023-11-11T16:30:00Z',
+      },
+    ],
+  },
+  {
+    id: 3,
+    username: 'JohnDoe',
+    text: 'Exploring the depths: a dive into unknown waters.',
+    timestamp: '2023-11-12T17:45:00Z',
+    imageUrl: 'https://via.placeholder.com/150',
+    comments: [
+      {
+        id: 4,
+        text: 'Absolutely thrilling experience!',
+        username: 'AliceB',
+        timestamp: '2023-11-12T18:20:00Z',
+        imageUrl: 'https://via.placeholder.com/100',
+      },
+      {
+        id: 5,
+        text: "Can't wait to try this out!",
+        username: 'JaneDoe',
+        timestamp: '2023-11-12T19:00:00Z',
+      },
+    ],
+  },
 ];
 
 const DiverBlog = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>(blogPostsData);
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(event.target.value);
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const filteredBlogs = blogPostsData.filter(
-      blog =>
-        blog.text.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        blog.comments.some(comment =>
-          comment.text.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-    );
-    setBlogs(filteredBlogs);
-  };
+  // when page is loaded fetch data
 
   return (
     <div>
-      <form onSubmit={handleSubmit} style={{ padding: '20px' }}>
-        <input
-          type='text'
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder='Search blogs...'
-          style={{ marginRight: '10px', padding: '10px', width: '300px' }}
-        />
-        <button type='submit' style={{ padding: '10px 20px' }}>
-          Search
-        </button>
-      </form>
-      {blogs.map(blog => (
-        <div
-          key={blog.id}
-          style={{
-            border: '1px solid black',
-            margin: '20px',
-            padding: '20px',
-            position: 'relative',
-          }}
-        >
-          <h4 style={{ position: 'absolute', top: '10px', left: '10px' }}>
-            {blog.username} - {new Date(blog.timestamp).toLocaleString()}
-          </h4>
-          <p>{blog.text}</p>
-          {blog.imageUrl && (
-            <img
-              src={blog.imageUrl}
-              alt='Blog'
-              style={{ maxWidth: '100%', margin: '10px 0' }}
-            />
-          )}
-          {blog.comments.map(comment => (
-            <div
-              key={comment.id}
-              style={{
-                borderTop: '1px dashed grey',
-                padding: '10px',
-                marginTop: '10px',
-              }}
-            >
-              <strong>{comment.username}</strong> (
-              {new Date(comment.timestamp).toLocaleString()}): {comment.text}
-              {comment.imageUrl && (
-                <img
-                  src={comment.imageUrl}
-                  alt='Comment'
-                  style={{ maxWidth: '100%', marginTop: '5px' }}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      ))}
+      <BlogDefaultDisplay blogPostsData={blogPostsData} />
     </div>
   );
 };
