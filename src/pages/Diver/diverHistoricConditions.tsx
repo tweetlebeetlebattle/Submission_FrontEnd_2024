@@ -83,7 +83,7 @@ const DiverHistoricConditions = () => {
         position: 'top' as const,
       },
     },
-    maintainAspectRatio: false,
+    maintainAspectRatio: true,
   };
 
   return (
