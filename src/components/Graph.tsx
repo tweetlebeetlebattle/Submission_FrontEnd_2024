@@ -8,7 +8,7 @@ interface DataItem {
   y: number;
 }
 
-interface GraphProps {
+interface GraphManagerProps {
   datasets: {
     title: string;
     data: DataItem[];
@@ -16,7 +16,7 @@ interface GraphProps {
   }[];
 }
 
-const Graph: React.FC<GraphProps> = ({ datasets }) => {
+const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
   // Generate random colors for each dataset
   const colors = datasets.map(
     () => '#' + Math.floor(Math.random() * 16777215).toString(16)
@@ -112,4 +112,4 @@ const legendItemStyle: React.CSSProperties = {
   marginBottom: '10px',
 };
 
-export default Graph;
+export default GraphManager;

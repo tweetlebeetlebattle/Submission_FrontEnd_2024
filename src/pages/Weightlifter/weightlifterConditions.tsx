@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import ConditionManager from '../../components/ConditionManager';
-import Graph from '../../components/Graph';
+import GraphManager from '../../components/Graph';
 import NewConditionForm from '../../components/NewConditionForm';
+import NewTrainingLog from '../../components/NewTrainingLog';
+import TrainingLogManager from '../../components/TrainingLogManager';
 
 interface Condition {
   title: string;
@@ -40,7 +42,7 @@ const testData1 = [
 const WeightlifterConditions = () => {
   const [conditions, setConditions] = useState<Condition[]>([]);
   const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
-
+  const [needsRefresh, setNeedsRefresh] = useState<boolean>(true);
   // Fetch existing conditions (simulated)
   useEffect(() => {
     const fetchConditions = async () => {
@@ -92,9 +94,32 @@ const WeightlifterConditions = () => {
         </div>
       </div>
 
-      {/* Graph Container */}
-      <div style={graphContainerStyle}>
-        <Graph datasets={testData1} />
+      {/*  GraphManager Container */}
+      <div style={GraphManagerContainerStyle}>
+        <GraphManager datasets={testData1} />
+      </div>
+      <div>
+        {/* need custom styling*/}
+        <NewTrainingLog isRunningRefreshPage={setNeedsRefresh} />
+        {/* map all data to thisa */}
+        <div style={conditionsContainerStyle}>
+          {conditions.map((condition, index) => (
+            <TrainingLogManager
+              key={index}
+              title={condition.title}
+              isMakePublic={condition.isPublic}
+              isVisible={true}
+              onToggleMakePublic={value => {
+                const updatedConditions = [...conditions];
+                updatedConditions[index].isPublic = value;
+                setConditions(updatedConditions);
+              }}
+              onToggleVisible={value => {
+                console.log(`Toggle Visible for ${condition.title}:`, value);
+              }}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );
@@ -126,7 +151,7 @@ const conditionsContainerStyle: React.CSSProperties = {
   backgroundColor: '#f5f5f5',
 };
 
-const graphContainerStyle: React.CSSProperties = {
+const GraphManagerContainerStyle: React.CSSProperties = {
   flex: 1,
   padding: '10px',
   border: '1px solid #ccc',
