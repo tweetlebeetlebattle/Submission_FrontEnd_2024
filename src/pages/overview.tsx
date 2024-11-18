@@ -1,81 +1,98 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import overviewDive from '../media/images/overviewDive.webp';
 import overviewLifting from '../media/images/overviewLifting.webp';
 import OnboardingModal from '../modal/onboardingModal';
+import { AuthContext } from '../store/authContext';
+import { useNavigate } from 'react-router-dom';
 
 const Overview = () => {
-    // block onboarding modal if userInfo is set
+  // block onboarding modal if userInfo is set
+  const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    const [isModalVisible, setIsModalVisible] = useState(false);
-    const [direction, setDirection] = useState<string | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(
+    authInfo.authInfo.username === ''
+  );
+  const [direction, setDirection] = useState<string | null>(null);
 
-    const handleClick = (side: string) => {
-        setIsModalVisible(true);
-        if (side === 'Left') {
-            setDirection('diver-overview');
-        } else {
-            setDirection('weightlifter-overview');
-        }
-    };
-    return (
-        <div style={containerStyle}>
-            {isModalVisible && (
-                <OnboardingModal
-                    direction={direction || ""}
-                />
-            )}
-            <div
-                style={imageSideStyle}
-                className="image-container left-side"
-                onClick={() => handleClick('Left')}
-            >
-                <img src={overviewDive} alt="Left Side" style={imageStyle} />
-                <h2 style={textStyle}>Left Side Content</h2>
-            </div>
-            <div
-                style={imageSideStyle}
-                className="image-container right-side"
-                onClick={() => handleClick('Right')}
-            >
-                <img src={overviewLifting} alt="Right Side" style={imageStyle} />
-                <h2 style={textStyle}>Right Side Content</h2>
-            </div>
-        </div>
-    );
+  const handleClick = (side: string) => {
+    console.log(authInfo.authInfo);
+    if (authInfo.authInfo.username === '') {
+      handleClickNotLoggedIn(side);
+    } else {
+      handleClickLoggedIn(side);
+    }
+  };
+  const handleClickNotLoggedIn = (side: string) => {
+    setIsModalVisible(true);
+    if (side === 'Left') {
+      setDirection('diver-overview');
+    } else {
+      setDirection('weightlifter-overview');
+    }
+  };
+  const handleClickLoggedIn = (side: string) => {
+    if (side === 'Left') {
+      navigate('/diver-overview');
+    } else {
+      navigate('/weightlifter-overview');
+    }
+  };
+  return (
+    <div style={containerStyle}>
+      {isModalVisible && <OnboardingModal direction={direction || ''} />}
+      <div
+        style={imageSideStyle}
+        className='image-container left-side'
+        onClick={() => handleClick('Left')}
+      >
+        <img src={overviewDive} alt='Left Side' style={imageStyle} />
+        <h2 style={textStyle}>Left Side Content</h2>
+      </div>
+      <div
+        style={imageSideStyle}
+        className='image-container right-side'
+        onClick={() => handleClick('Right')}
+      >
+        <img src={overviewLifting} alt='Right Side' style={imageStyle} />
+        <h2 style={textStyle}>Right Side Content</h2>
+      </div>
+    </div>
+  );
 };
 
 const containerStyle: React.CSSProperties = {
-    display: 'flex',
-    height: '100vh',
+  display: 'flex',
+  height: '100vh',
 };
 
 const imageSideStyle: React.CSSProperties = {
-    flex: 1,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-    overflow: 'hidden',
-    cursor: 'pointer',
+  flex: 1,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  position: 'relative',
+  overflow: 'hidden',
+  cursor: 'pointer',
 };
 
 const imageStyle: React.CSSProperties = {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    zIndex: 0,
-    transition: 'filter 0.3s ease, opacity 0.3s ease',
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover',
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  zIndex: 0,
+  transition: 'filter 0.3s ease, opacity 0.3s ease',
 };
 
 const textStyle: React.CSSProperties = {
-    color: 'white',
-    fontSize: '2rem',
-    zIndex: 1,
-    fontFamily: 'Arial, sans-serif',
-    transition: 'font-family 0.3s ease',
+  color: 'white',
+  fontSize: '2rem',
+  zIndex: 1,
+  fontFamily: 'Arial, sans-serif',
+  transition: 'font-family 0.3s ease',
 };
 
 const styles = `
@@ -104,8 +121,8 @@ html, body {
 }
 `;
 
-const styleSheet = document.createElement("style");
-styleSheet.type = "text/css";
+const styleSheet = document.createElement('style');
+styleSheet.type = 'text/css';
 styleSheet.innerText = styles;
 document.head.appendChild(styleSheet);
 

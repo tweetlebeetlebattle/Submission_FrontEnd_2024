@@ -1,7 +1,14 @@
 import React, { PropsWithChildren } from 'react';
-import CachingService from "../cache/cachingService";
-import { createContext, useState, useEffect, useContext, useCallback, useMemo } from "react";
-import { AuthInfo } from "../types/types";
+import CachingService from '../cache/cachingService';
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+  useMemo,
+} from 'react';
+import { AuthInfo } from '../types/types';
 
 interface AuthContextValue {
   authInfo: AuthInfo;
@@ -12,8 +19,9 @@ interface AuthContextValue {
 // Initial values for the context
 const initialValue: AuthContextValue = {
   authInfo: {
-    username: "",
-    token: "",
+    username: '',
+    token: '',
+    isAdmin: false,
   },
   storeInfo: async () => void 0,
   removeInfo: () => void 0,
@@ -31,7 +39,7 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
     try {
       await CachingService.storeAuthInfo(authInfo);
     } catch (error) {
-      console.error("Error storing info:", error);
+      console.error('Error storing info:', error);
     }
   }, []);
 
@@ -40,7 +48,7 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
       CachingService.removeAuthInfo();
       setAuthInfo(initialValue.authInfo);
     } catch (error) {
-      console.error("Error removing info:", error);
+      console.error('Error removing info:', error);
     }
   }, []);
 
@@ -50,23 +58,24 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
         const cachedAuthInfo = await CachingService.loadAuthInfo();
         setAuthInfo(cachedAuthInfo || initialValue.authInfo);
       } catch (error) {
-        console.error("Error loading cached info:", error);
+        console.error('Error loading cached info:', error);
       }
     };
 
     fetchCachedAuthInfo();
   }, []);
 
-  const contextValue = useMemo(() => ({
-    authInfo,
-    storeInfo,
-    removeInfo,
-  }), [authInfo, storeInfo, removeInfo]);
+  const contextValue = useMemo(
+    () => ({
+      authInfo,
+      storeInfo,
+      removeInfo,
+    }),
+    [authInfo, storeInfo, removeInfo]
+  );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 };
 

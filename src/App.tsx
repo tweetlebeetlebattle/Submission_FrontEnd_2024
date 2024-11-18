@@ -25,6 +25,7 @@ import {
   weightlifterLinks,
 } from './utils/componentProps';
 import NavigationBar from './components/NavigationBar';
+import { AuthProvider } from './store/authContext';
 
 function AppContent() {
   const location = useLocation();
@@ -85,9 +86,11 @@ function AppContent() {
 
 function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </AuthProvider>
   );
 }
 
