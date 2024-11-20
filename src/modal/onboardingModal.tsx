@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-interface OnboardingModalProps {
-  direction: string;
-}
-
-const OnboardingModal: React.FC<OnboardingModalProps> = ({ direction }) => {
+const OnboardingModal = () => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const navigate = useNavigate();
 
@@ -17,7 +13,6 @@ const OnboardingModal: React.FC<OnboardingModalProps> = ({ direction }) => {
 
   const handleContinueAsGuest = () => {
     console.log('Continuing as Guest');
-    navigate(`/${direction}`);
     setIsModalOpen(false);
   };
 

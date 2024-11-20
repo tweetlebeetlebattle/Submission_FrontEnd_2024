@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import Blog from './Blog';
 import SearchBar from './SearchBar';
 import CreateBlog from './CreateBlog';
+import { AuthContext } from '../store/authContext';
 
 interface Comment {
   id: number;
@@ -27,7 +28,9 @@ interface BlogDefaultDisplayProps {
 const BlogDefaultDisplay: React.FC<BlogDefaultDisplayProps> = ({
   blogPostsData,
 }) => {
-  const [showCreateBlogForm] = useState(true); // Always true for demonstration, be determined by logged in user or guest
+  const authInfo = useContext(AuthContext);
+
+  const [showCreateBlogForm] = useState(authInfo.authInfo.username !== '');
 
   // should have env value that sets the max blogs per page
   // should be paginated:
