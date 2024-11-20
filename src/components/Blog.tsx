@@ -24,7 +24,7 @@ interface BlogPostProps {
 
 const Blog: React.FC<BlogPostProps> = ({ blog }) => {
   const authInfo = useContext(AuthContext);
-  const [showCommentForm] = useState(authInfo.authInfo.username !== ''); // Always true for demonstration, be determined by logged in user or guest
+  const [showCommentForm] = useState(authInfo.authInfo.username !== '');
   const [commentText, setCommentText] = useState('');
   const [commentImage, setCommentImage] = useState<File | null>(null);
 
