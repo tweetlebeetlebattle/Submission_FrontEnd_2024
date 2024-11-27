@@ -113,7 +113,14 @@ const apiTerminal = {
       console.log(e);
     }
   },
-  async fetchApprovedWeightlifterBlogsComments() {},
+  async fetchApprovedWeightlifterBlogsComments() {
+    try {
+      const response = fetch('/api/WeightlifterBlog/FetchAllApprovedComments');
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
   async fetchUnapprovedBlogsComments(authorization: string) {
     try {
       const response = await fetch(

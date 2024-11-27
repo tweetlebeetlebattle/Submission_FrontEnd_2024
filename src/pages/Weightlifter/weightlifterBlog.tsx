@@ -1,7 +1,4 @@
-// DiverBlog.tsx
-import React, { useContext, useEffect, useState } from 'react';
-import SearchBar from '../../components/SearchBar';
-import Blog from '../../components/Blog';
+import { useContext, useEffect, useState } from 'react';
 import BlogDefaultDisplay from '../../components/BlogDefaultDisplay';
 import { AuthContext } from '../../store/authContext';
 import apiTerminal from '../../client/apiTerminal';
@@ -23,78 +20,49 @@ interface BlogPost {
   comments: Comment[];
 }
 
-// Sample data for initial display
-const blogPostsData: BlogPost[] = [
-  {
-    id: '1',
-    username: 'JaneDoe',
-    text: 'Welcome to my blog! This is my first post.',
-    timestamp: '2023-11-10T12:00:00Z',
-    imageUrl: 'https://via.placeholder.com/150',
-    comments: [
-      {
-        id: '1',
-        text: 'Great post!',
-        username: 'JohnDoe',
-        timestamp: '2023-11-10T13:00:00Z',
-        imageUrl: 'https://via.placeholder.com/100',
-      },
-      {
-        id: '2',
-        text: 'Looking forward to reading more!',
-        username: 'AliceB',
-        timestamp: '2023-11-10T14:00:00Z',
-      },
-    ],
-  },
-  {
-    id: '2',
-    username: 'AliceB',
-    text: "Here's something new I learned about sustainable diving practices.",
-    timestamp: '2023-11-11T15:00:00Z',
-    imageUrl: 'https://via.placeholder.com/150',
-    comments: [
-      {
-        id: '2',
-        text: "That's really insightful, thanks for sharing!",
-        username: 'JaneDoe',
-        timestamp: '2023-11-11T16:30:00Z',
-      },
-    ],
-  },
-  {
-    id: '3',
-    username: 'JohnDoe',
-    text: 'Exploring the depths: a dive into unknown waters.',
-    timestamp: '2023-11-12T17:45:00Z',
-    imageUrl: 'https://via.placeholder.com/150',
-    comments: [
-      {
-        id: '4',
-        text: 'Absolutely thrilling experience!',
-        username: 'AliceB',
-        timestamp: '2023-11-12T18:20:00Z',
-        imageUrl: 'https://via.placeholder.com/100',
-      },
-      {
-        id: '5',
-        text: "Can't wait to try this out!",
-        username: 'JaneDoe',
-        timestamp: '2023-11-12T19:00:00Z',
-      },
-    ],
-  },
-];
-
 const WeightlifterBlog = () => {
-  const [blogs, setBlogs] = useState<BlogPost[]>(blogPostsData);
-  // when page is loaded fetch data
-  // useEffect().. to load data
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const authInfo = useContext(AuthContext);
+
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await apiTerminal.fetchApprovedDiverBlogsComments();
+
+        const transformedBlogs = response.map((blog: any) => ({
+          id: blog.blogId,
+          username: blog.applicationUserName,
+          text: blog.mediaTextUrl,
+          timestamp: blog.time,
+          imageUrl: blog.mediaPictureUrl,
+          comments: blog.comments.map((comment: any) => ({
+            id: comment.id,
+            text: comment.mediaTextUrl,
+            username: comment.applicationUserName,
+            timestamp: comment.time,
+            imageUrl: comment.mediaPictureUrl,
+          })),
+        }));
+
+        setBlogs(transformedBlogs);
+      } catch (error) {
+        setError('Failed to fetch blogs. Please try again later.');
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBlogs();
+  }, [authInfo.authInfo.token]);
 
   const handleCreateBlog = async (blogText: string, blogImage: File | null) => {
     try {
-      const response = await apiTerminal.createDiverBlog(
+      const response = await apiTerminal.createWeightlifterBlog(
         blogText,
         blogImage as File,
         authInfo.authInfo.token
@@ -111,7 +79,7 @@ const WeightlifterBlog = () => {
     blogImage: File | null
   ) => {
     try {
-      const response = await apiTerminal.createDiverComment(
+      const response = await apiTerminal.createWeightlifterComment(
         blogId,
         blogText,
         blogImage as File,
@@ -126,7 +94,7 @@ const WeightlifterBlog = () => {
   return (
     <div>
       <BlogDefaultDisplay
-        blogPostsData={blogPostsData}
+        blogPostsData={blogs}
         handleCreateBlog={handleCreateBlog}
         handleCreateComment={handleCreateComment}
       />

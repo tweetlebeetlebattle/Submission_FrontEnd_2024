@@ -59,6 +59,7 @@ const DiverBlog = () => {
 
     fetchBlogs();
   }, [authInfo.authInfo.token]);
+
   const handleCreateBlog = async (blogText: string, blogImage: File | null) => {
     try {
       const response = await apiTerminal.createDiverBlog(
