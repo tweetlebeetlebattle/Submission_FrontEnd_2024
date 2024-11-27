@@ -5,7 +5,7 @@ import CreateBlog from './CreateBlog';
 import { AuthContext } from '../store/authContext';
 
 interface Comment {
-  id: number;
+  id: string;
   text: string;
   username: string;
   timestamp: string;
@@ -13,7 +13,7 @@ interface Comment {
 }
 
 interface BlogPost {
-  id: number;
+  id: string;
   username: string;
   text: string;
   timestamp: string;
@@ -23,25 +23,33 @@ interface BlogPost {
 
 interface BlogDefaultDisplayProps {
   blogPostsData: BlogPost[];
+  handleCreateBlog: (blogText: string, blogImage: File | null) => void;
+  handleCreateComment: (
+    blogId: string,
+    blogText: string,
+    blogImage: File | null
+  ) => void;
 }
 
 const BlogDefaultDisplay: React.FC<BlogDefaultDisplayProps> = ({
   blogPostsData,
+  handleCreateBlog,
+  handleCreateComment,
 }) => {
   const authInfo = useContext(AuthContext);
 
   const [showCreateBlogForm] = useState(authInfo.authInfo.username !== '');
-
-  // should have env value that sets the max blogs per page
   // should be paginated:
-  // should send to the backend first: how many blogs per page second: which page it wants (it calculates only which comments to send to the frontend)
-  // should have loadData parameter, that loads the correct blog
   return (
     <div>
       <SearchBar />
-      {showCreateBlogForm && <CreateBlog />}
+      {showCreateBlogForm && <CreateBlog onSubmit={handleCreateBlog} />}
       {blogPostsData.map(blog => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          handleCreateComment={handleCreateComment}
+        />
       ))}
     </div>
   );

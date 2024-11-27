@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from '../store/authContext';
 
 interface Comment {
-  id: number;
+  id: string;
   text: string;
   username: string;
   timestamp: string;
@@ -10,7 +10,7 @@ interface Comment {
 }
 
 interface BlogPost {
-  id: number;
+  id: string;
   username: string;
   text: string;
   timestamp: string;
@@ -20,23 +20,28 @@ interface BlogPost {
 
 interface BlogPostProps {
   blog: BlogPost;
+  handleCreateComment: (
+    blogId: string,
+    commentText: string,
+    commentImage: File | null
+  ) => void;
 }
 
-const Blog: React.FC<BlogPostProps> = ({ blog }) => {
+const Blog: React.FC<BlogPostProps> = ({ blog, handleCreateComment }) => {
   const authInfo = useContext(AuthContext);
-  const [showCommentForm] = useState(authInfo.authInfo.username !== '');
+  const showCommentForm = authInfo.authInfo.username !== '';
+
   const [commentText, setCommentText] = useState('');
   const [commentImage, setCommentImage] = useState<File | null>(null);
 
   const handleCommentSubmit = () => {
-    const timestamp = new Date().toISOString(); // Set current time as timestamp
-    console.log({
-      text: commentText,
-      image: commentImage,
-      blogId: blog.id,
-      timestamp,
-    });
-    // Reset fields after submit
+    if (!commentText.trim()) {
+      alert('Comment text cannot be empty.');
+      return;
+    }
+
+    handleCreateComment(blog.id, commentText, commentImage);
+
     setCommentText('');
     setCommentImage(null);
   };

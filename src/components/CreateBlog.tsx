@@ -1,17 +1,46 @@
 import React, { useState } from 'react';
 
-const CreateBlog: React.FC = () => {
+interface CreateBlogProps {
+  onSubmit: (blogText: string, blogImage: File | null) => void;
+}
+
+const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
   const [blogText, setBlogText] = useState('');
   const [blogImage, setBlogImage] = useState<File | null>(null);
 
+  // Supported file formats
+  const supportedFormats = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/webp',
+  ];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+
+    if (file && !supportedFormats.includes(file.type)) {
+      alert(
+        `Unsupported file format. Please upload one of the following: ${supportedFormats.join(', ')}`
+      );
+      setBlogImage(null); // Clear the file selection
+    } else {
+      setBlogImage(file);
+    }
+  };
+
   const handleSubmit = () => {
-    const timestamp = new Date().toISOString(); // Record the submission time
-    // Log the blog data
+    if (!blogText.trim()) {
+      alert('Blog text cannot be empty!');
+      return;
+    }
+
     console.log({
       text: blogText,
       image: blogImage,
-      timestamp,
     });
+
+    onSubmit(blogText, blogImage);
 
     // Reset fields after submission
     setBlogText('');
@@ -31,9 +60,8 @@ const CreateBlog: React.FC = () => {
         />
         <input
           type='file'
-          onChange={e =>
-            setBlogImage(e.target.files ? e.target.files[0] : null)
-          }
+          accept={supportedFormats.join(',')} // Allow only supported formats
+          onChange={handleFileChange}
           style={{ display: 'block', marginBottom: '10px' }}
         />
         <button onClick={handleSubmit} style={{ padding: '10px 20px' }}>
