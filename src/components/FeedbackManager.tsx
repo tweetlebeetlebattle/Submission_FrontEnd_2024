@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { AuthContext } from '../store/authContext';
+import apiTerminal from '../client/apiTerminal';
 
 interface FeedbackData {
+  id: string;
   username: string;
   location: string;
   waveRead?: number;
@@ -16,11 +19,42 @@ interface FeedbackData {
 
 interface FeedbackManagerProps {
   feedback: FeedbackData;
+  onDelete: () => void; // Callback for notifying parent about deletion
 }
 
-const FeedbackManager: React.FC<FeedbackManagerProps> = ({ feedback }) => {
-  const handleDelete = () => {
-    console.log('Deleting item with timestamp:', feedback.timestamp);
+const FeedbackManager: React.FC<FeedbackManagerProps> = ({
+  feedback,
+  onDelete,
+}) => {
+  const authInfo = useContext(AuthContext);
+  const [textContent, setTextContent] = useState<string | null>(null);
+
+  // Fetch the text content from the provided URL
+  useEffect(() => {
+    const fetchTextContent = async () => {
+      if (feedback.text) {
+        try {
+          const response = await fetch(feedback.text);
+          const text = await response.text();
+          setTextContent(text);
+        } catch (error) {
+          console.error('Error fetching text content:', error);
+          setTextContent('Unable to fetch the text content.');
+        }
+      }
+    };
+
+    fetchTextContent();
+  }, [feedback.text]);
+
+  const handleDelete = async (id: string) => {
+    try {
+      await apiTerminal.deleteFeedback(id, authInfo.authInfo.token);
+      console.log('Deleted feedback with ID:', id);
+      onDelete(); // Notify parent about the deletion
+    } catch (error) {
+      console.error('Error deleting feedback:', error);
+    }
   };
 
   return (
@@ -55,20 +89,36 @@ const FeedbackManager: React.FC<FeedbackManagerProps> = ({ feedback }) => {
         </p>
       )}
       <p>
-        <strong>Timestamp:</strong> {feedback.timestamp}
+        <strong>Timestamp:</strong>{' '}
+        {new Date(feedback.timestamp).toLocaleString()}
       </p>
-      {feedback.text && (
-        <p>
-          <strong>Comment:</strong> {feedback.text}
-        </p>
+      {textContent && (
+        <div>
+          <strong>Comment:</strong>
+          <pre
+            style={{
+              backgroundColor: '#f8f8f8',
+              padding: '10px',
+              borderRadius: '5px',
+              overflowX: 'auto',
+              whiteSpace: 'pre-wrap',
+            }}
+          >
+            {textContent}
+          </pre>
+        </div>
       )}
       {feedback.pictureUrl && (
         <div>
           <strong>Picture:</strong>
-          <img src={feedback.pictureUrl} alt='Feedback' />
+          <img
+            src={feedback.pictureUrl}
+            alt='Feedback'
+            style={{ maxWidth: '100%', height: 'auto', marginTop: '10px' }}
+          />
         </div>
       )}
-      <button onClick={handleDelete}>Delete</button>
+      <button onClick={() => handleDelete(feedback.id)}>Delete</button>
     </div>
   );
 };

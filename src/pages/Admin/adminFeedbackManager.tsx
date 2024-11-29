@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import FeedbackManager from '../../components/FeedbackManager';
+import { AuthContext } from '../../store/authContext';
+import apiTerminal from '../../client/apiTerminal';
 
 interface FeedbackData {
+  id: string;
   username: string;
   location: string;
   waveRead?: number;
@@ -16,41 +19,54 @@ interface FeedbackData {
 }
 
 const AdminFeedbackManager: React.FC = () => {
-  // Test data array
-  const feedbacks: FeedbackData[] = [
-    {
-      username: 'JohnDoe',
-      location: 'California',
-      waveRead: 5,
-      waveUnit: 'ft',
-      tempRead: 75,
-      tempUnit: 'F',
-      windRead: 10,
-      windUnit: 'mph',
-      timestamp: '2023-11-01T12:00:00Z',
-      text: 'Great conditions today!',
-      pictureUrl: 'https://example.com/photo1.jpg',
-    },
-    {
-      username: 'JaneDoe',
-      location: 'Florida',
-      timestamp: '2023-11-02T15:30:00Z',
-      text: 'Too windy for my taste.',
-      pictureUrl: 'https://example.com/photo2.jpg',
-    },
-    // Add more feedbacks as needed
-  ];
+  const authInfo = useContext(AuthContext);
+  const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
+  const [refresh, setRefresh] = useState(false);
 
-  // Function to simulate deletion (you might replace this with real API calls)
-  const handleDelete = (timestamp: string) => {
-    console.log('Deleted feedback with timestamp:', timestamp);
-    // Logic to delete feedback from the state or backend
+  const fetchFeedbackData = async () => {
+    try {
+      const response = await apiTerminal.fetchAllFeedback(
+        authInfo.authInfo.token
+      );
+      const transformedFeedbacks: FeedbackData[] = response.feedbacks.map(
+        (feedback: any) => ({
+          id: feedback.id,
+          username: feedback.username,
+          location: feedback.locationName,
+          waveRead: feedback.waveRead,
+          waveUnit: feedback.waveUnitName,
+          tempRead: feedback.tempRead,
+          tempUnit: feedback.tempUnitName,
+          windRead: feedback.windSpeedRead,
+          windUnit: feedback.windSpeedUnitName,
+          timestamp: feedback.date,
+          text: feedback.textUrl,
+          pictureUrl: feedback.imageUrl,
+        })
+      );
+
+      setFeedbacks(transformedFeedbacks);
+    } catch (error) {
+      console.error('Error fetching feedback data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchFeedbackData();
+  }, [refresh]);
+
+  const handleFeedbackDeleted = () => {
+    setRefresh(prev => !prev);
   };
 
   return (
     <div>
       {feedbacks.map(feedback => (
-        <FeedbackManager key={feedback.timestamp} feedback={feedback} />
+        <FeedbackManager
+          key={feedback.id}
+          feedback={feedback}
+          onDelete={handleFeedbackDeleted}
+        />
       ))}
     </div>
   );

@@ -1,8 +1,8 @@
-import React, { useState, ChangeEvent } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
+import apiTerminal from '../../client/apiTerminal';
 import ValueBar from '../../components/ValueBar';
+import { AuthContext } from '../../store/authContext';
 
-// Define types for the location state
 interface LocationState {
   latitude: number | null;
   longitude: number | null;
@@ -15,30 +15,39 @@ const DiverFeedback = () => {
     latitude: null,
     longitude: null,
   });
-  const [selectedValue, setSelectedValue] = useState('Option 1');
-  const optionsValue = [
-    'Шабла',
-    'Калиакра',
-    'Варна',
-    'Емине',
-    'Бургас',
-    'Ахтопол',
-  ];
+  const [waveHeight, setWaveHeight] = useState<number | null>(null);
+  const [waveUnit, setWaveUnit] = useState<string | null>(null);
+  const [temp, setTemp] = useState<number | null>(null);
+  const [tempUnit, setTempUnit] = useState<string | null>(null);
+  const [windSpeed, setWindSpeed] = useState<number | null>(null);
+  const [windUnit, setWindUnit] = useState<string | null>(null);
+  const [locationOptions, setLocationOptions] = useState<string[]>([]);
+  const [unitOptions, setUnitOptions] = useState<string[]>([]);
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const authInfo = useContext(AuthContext);
 
-  const handleSubmitLocation = () => {
-    alert(`You have selected: ${selectedValue}`);
-  };
-  const handleTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    setText(event.target.value);
-  };
+  useEffect(() => {
+    const fetchOptions = async () => {
+      try {
+        const locations = await apiTerminal.fetchAllLocations();
+        setLocationOptions(locations);
+        const units = await apiTerminal.fetchAllUnits();
+        setUnitOptions(units);
+      } catch (error) {
+        console.error('Error fetching options:', error);
+      }
+    };
+
+    fetchOptions();
+  }, []);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (event.target.files) {
-      setFile(event.target.files[0]); // Assuming single file upload
+      setFile(event.target.files[0]);
     }
   };
 
-  const fetchLocation = () => {
+  const handleLocationFetch = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         position => {
@@ -57,53 +66,110 @@ const DiverFeedback = () => {
   };
 
   const handleSubmit = async () => {
-    const formData = new FormData();
-    formData.append('text', text);
-    if (file) {
-      formData.append('file', file);
-    }
-    formData.append('latitude', location.latitude?.toString() ?? '');
-    formData.append('longitude', location.longitude?.toString() ?? '');
-
     try {
-      // Replace 'your-backend-endpoint' with your actual backend API endpoint
-      const response = await axios.post('your-backend-endpoint', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
-      console.log(response.data);
+      const coordinates =
+        location.latitude && location.longitude
+          ? `${location.latitude},${location.longitude}`
+          : null;
+
+      await apiTerminal.createFeedback(
+        selectedLocation,
+        coordinates ?? '',
+        waveHeight ?? null,
+        waveUnit ?? null,
+        temp ?? null,
+        tempUnit ?? null,
+        windSpeed ?? null,
+        windUnit ?? null,
+        file ?? null,
+        text ?? null,
+        authInfo.authInfo.token
+      );
+
       alert('Feedback sent successfully!');
     } catch (error) {
-      console.error('Error sending feedback:', error);
+      console.error('Error submitting feedback:', error);
       alert('Failed to send feedback.');
     }
   };
 
   return (
-    <>
+    <div>
+      <h1>Diver Feedback</h1>
+      <ValueBar
+        options={locationOptions}
+        selectedValue={selectedLocation}
+        setSelectedValue={setSelectedLocation}
+        onSubmit={() => alert(`Selected location: ${selectedLocation}`)}
+      />
+
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder='Enter your feedback...'
+        maxLength={600}
+        rows={4}
+        style={{ width: '100%' }}
+      />
+      <input type='file' onChange={handleFileChange} />
+      <button onClick={handleLocationFetch}>Get Location</button>
+
       <div>
-        <ValueBar
-          options={optionsValue}
-          selectedValue={selectedValue}
-          setSelectedValue={setSelectedValue}
-          onSubmit={handleSubmitLocation}
+        <h3>Wave Height</h3>
+        <input
+          type='number'
+          value={waveHeight ?? ''}
+          onChange={e => setWaveHeight(Number(e.target.value))}
+          placeholder='Enter wave height'
         />
-        <div>
-          <textarea
-            value={text}
-            onChange={handleTextChange}
-            placeholder='Enter your feedback...'
-            maxLength={600}
-            rows={4}
-            style={{ width: '100%' }}
-          />
-          <input type='file' onChange={handleFileChange} />
-          <button onClick={fetchLocation}>Get Location</button>
-          <button onClick={handleSubmit}>Send Feedback</button>
-        </div>
+        <select onChange={e => setWaveUnit(e.target.value)}>
+          <option value=''>Select Unit</option>
+          {unitOptions.map(unit => (
+            <option key={unit} value={unit}>
+              {unit}
+            </option>
+          ))}
+        </select>
       </div>
-    </>
+
+      <div>
+        <h3>Temperature</h3>
+        <input
+          type='number'
+          value={temp ?? ''}
+          onChange={e => setTemp(Number(e.target.value))}
+          placeholder='Enter temperature'
+        />
+        <select onChange={e => setTempUnit(e.target.value)}>
+          <option value=''>Select Unit</option>
+          {unitOptions.map(unit => (
+            <option key={unit} value={unit}>
+              {unit}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <h3>Wind Speed</h3>
+        <input
+          type='number'
+          value={windSpeed ?? ''}
+          onChange={e => setWindSpeed(Number(e.target.value))}
+          placeholder='Enter wind speed'
+        />
+        <select onChange={e => setWindUnit(e.target.value)}>
+          <option value=''>Select Unit</option>
+          {unitOptions.map(unit => (
+            <option key={unit} value={unit}>
+              {unit}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <button onClick={handleSubmit}>Submit Feedback</button>
+    </div>
   );
 };
 
