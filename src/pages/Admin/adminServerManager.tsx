@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import ServerManager from '../../components/ServerManager';
+import { AuthContext } from '../../store/authContext';
+import apiTerminal from '../../client/apiTerminal';
 
 interface ServerData {
   id: string;
@@ -8,30 +10,59 @@ interface ServerData {
 }
 
 const AdminServerManager: React.FC = () => {
-  // Simulated server data array
-  const serverDataArray: ServerData[] = [
-    {
-      id: '1',
-      timestamp: '2023-11-01T12:00:00Z',
-      text: 'Server #1 is active.',
-    },
-    {
-      id: '2',
-      timestamp: '2023-11-02T13:00:00Z',
-      text: 'Server #2 is under maintenance.',
-    },
-    {
-      id: '3',
-      timestamp: '2023-11-03T14:00:00Z',
-      text: 'Server #3 has been upgraded.',
-    },
-    // Add more entries as needed
-  ];
+  const authInfo = useContext(AuthContext);
+  const [serverDataArray, setServerDataArray] = useState<ServerData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [refresh, setRefresh] = useState<boolean>(false);
+
+  const fetchServerData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiTerminal.fetchAllServerLogs(
+        authInfo.authInfo.token
+      );
+      const transformedData: ServerData[] = response._ServerLogs.map(
+        (log: any) => ({
+          id: log.id,
+          timestamp: log.time,
+          text: log.statusLog,
+        })
+      );
+      setServerDataArray(transformedData);
+    } catch (err) {
+      console.error('Error fetching server logs:', err);
+      setError('Failed to fetch server logs. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchServerData();
+  }, [refresh]);
+
+  const handleRefresh = () => {
+    setRefresh(prev => !prev);
+  };
+
+  if (loading) {
+    return <p>Loading server logs...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
 
   return (
     <div>
       {serverDataArray.map(serverData => (
-        <ServerManager key={serverData.id} serverData={serverData} />
+        <ServerManager
+          key={serverData.id}
+          serverData={serverData}
+          onDelete={handleRefresh}
+        />
       ))}
     </div>
   );

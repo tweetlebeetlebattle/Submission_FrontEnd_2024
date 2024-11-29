@@ -282,6 +282,26 @@ const apiTerminal = {
       console.log(e);
     }
   },
+  async fetchAllServerLogs(authorization: string) {
+    try {
+      const response = fetch('/api/Admin/FetchAllServerLogs', authorization);
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async deleteServerLog(Id: string, authorization: string) {
+    try {
+      const response = post(
+        '/api/Admin/DeleteServerLog',
+        { Id },
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
 };
 
 export default apiTerminal;

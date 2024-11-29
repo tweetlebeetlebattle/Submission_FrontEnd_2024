@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useContext } from 'react';
+import apiTerminal from '../client/apiTerminal';
+import { AuthContext } from '../store/authContext';
 
 interface ServerData {
   id: string;
@@ -8,13 +10,24 @@ interface ServerData {
 
 interface ServerManagerProps {
   serverData: ServerData;
+  onDelete: () => void;
 }
 
-const ServerManager: React.FC<ServerManagerProps> = ({ serverData }) => {
-  // Define the delete function inside the component
-  const onDelete = () => {
-    console.log('Delete server data with ID:', serverData.id);
-    // Here you might want to update state or make an API call to remove the server data
+const ServerManager: React.FC<ServerManagerProps> = ({
+  serverData,
+  onDelete,
+}) => {
+  const authInfo = useContext(AuthContext);
+
+  const handleDelete = async () => {
+    try {
+      console.log('Deleted server data with ID:', serverData.id);
+
+      await apiTerminal.deleteServerLog(serverData.id, authInfo.authInfo.token);
+      onDelete();
+    } catch (error) {
+      console.error('Error deleting server log:', error);
+    }
   };
 
   return (
@@ -36,7 +49,7 @@ const ServerManager: React.FC<ServerManagerProps> = ({ serverData }) => {
       <p>
         <strong>Text:</strong> {serverData.text}
       </p>
-      <button onClick={onDelete} style={{ cursor: 'pointer' }}>
+      <button onClick={handleDelete} style={{ cursor: 'pointer' }}>
         Delete
       </button>
     </div>
