@@ -302,6 +302,144 @@ const apiTerminal = {
       console.log(e);
     }
   },
+  async fetchAllUserTrainingAndUniversalLogs(authorization: string) {
+    try {
+      const response = fetch(
+        '/api/Weightlifter/FetchAllUserTrainingAndUniversalLogs',
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async fetchPublicUserData(username: string, authorization: string) {
+    try {
+      const response = await fetch(
+        `/api/Weightlifter/FetchPublicUserData?Username=${encodeURIComponent(username)}`,
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+      throw e;
+    }
+  },
+  async fetchAllTrainingUnits(authorization: string) {
+    try {
+      const response = fetch(
+        '/api/Weightlifter/FetchAllTrainingUnits',
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async FetchAllTrainingTitles(authorization: string) {
+    try {
+      const response = fetch(
+        '/api/Weightlifter/FetchAllTrainingTitles',
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async CreateNewUniversalReading(
+    Name: string,
+    Date: string,
+    Measurment: number,
+    UnitName: string,
+    authorization: string
+  ) {
+    try {
+      const response = await post(
+        '/api/Weightlifter/CreateNewUniversalReading',
+        { Name, Date, Measurment, UnitName },
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async CreateNewTraining(
+    trainingData: {
+      Name: string;
+      Date: string;
+      TargetWeight: number;
+      UnitName: string;
+      TargetSets: number;
+      TargetReps: number;
+      Sets: { Reps: number; Text?: string; Image?: File }[];
+    },
+    authorization: string
+  ) {
+    try {
+      const formData = new FormData();
+      formData.append('Name', trainingData.Name);
+      formData.append('Date', trainingData.Date);
+      formData.append('TargetWeight', trainingData.TargetWeight.toString());
+      formData.append('UnitName', trainingData.UnitName);
+      formData.append('TargetSets', trainingData.TargetSets.toString());
+      formData.append('TargetReps', trainingData.TargetReps.toString());
+
+      trainingData.Sets.forEach((set, index) => {
+        formData.append(`Sets[${index}].Reps`, set.Reps.toString());
+        if (set.Text) {
+          formData.append(`Sets[${index}].Text`, set.Text);
+        }
+        if (set.Image) {
+          formData.append(`Sets[${index}].Image`, set.Image);
+        }
+      });
+
+      const response = await postFormData(
+        '/api/Weightlifter/CreateNewTraining',
+        formData,
+        authorization
+      );
+
+      return response;
+    } catch (e) {
+      console.error('Error creating new training:', e);
+      throw e;
+    }
+  },
+  async UpdateUniversalReadingPublicity(
+    Name: string,
+    IsPublic: boolean,
+    authorization: string
+  ) {
+    try {
+      const response = await post(
+        '/api/Weightlifter/UpdateUniversalReadingPublicity',
+        { Name, IsPublic },
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
+  async UpdateTrainingLogPublicity(
+    Name: string,
+    IsPublic: boolean,
+    authorization: string
+  ) {
+    try {
+      const response = await post(
+        '/api/Weightlifter/UpdateTrainingLogPublicity',
+        { Name, IsPublic },
+        authorization
+      );
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  },
 };
 
 export default apiTerminal;

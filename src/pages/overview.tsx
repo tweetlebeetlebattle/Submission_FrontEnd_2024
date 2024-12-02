@@ -13,7 +13,6 @@ import {
 import PageSegmentor from '../components/PageSegmentor';
 
 const Overview = () => {
-  // block onboarding modal if userInfo is set
   const authInfo = useContext(AuthContext);
   const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(

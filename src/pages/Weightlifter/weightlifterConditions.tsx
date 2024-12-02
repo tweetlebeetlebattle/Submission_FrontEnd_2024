@@ -1,122 +1,185 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import ConditionManager from '../../components/ConditionManager';
 import GraphManager from '../../components/Graph';
 import NewConditionForm from '../../components/NewConditionForm';
 import NewTrainingLog from '../../components/NewTrainingLog';
 import TrainingLogManager from '../../components/TrainingLogManager';
+import { AuthContext } from '../../store/authContext';
+import apiTerminal from '../../client/apiTerminal';
 
-interface Condition {
-  title: string;
-  isPublic: boolean;
+interface Measurement {
+  measurement: string;
+  unitName: string;
+  date: string;
+  isSuccessTraining: boolean | null;
 }
 
-const testData1 = [
-  {
-    title: 'Temperature',
-    unit: '°C',
-    data: [
-      { x: '2023-01-01', y: 22 },
-      { x: '2023-01-02', y: 19 },
-      { x: '2023-01-03', y: 21 },
-      { x: '2023-01-04', y: 24 },
-      { x: '2023-01-05', y: 28 },
-      { x: '2023-01-06', y: 25 },
-      { x: '2023-01-07', y: 23 },
-    ],
-  },
-  {
-    title: 'Rainfall',
-    unit: 'mm',
-    data: [
-      { x: '2023-01-01', y: 5 },
-      { x: '2023-01-02', y: 12 },
-      { x: '2023-01-03', y: 8 },
-      { x: '2023-01-04', y: 0 },
-      { x: '2023-01-05', y: 20 },
-      { x: '2023-01-06', y: 15 },
-      { x: '2023-01-07', y: 2 },
-    ],
-  },
-];
+interface RenderData {
+  title: string;
+  isPublic: boolean;
+  data: Measurement[];
+}
 
-const WeightlifterConditions = () => {
-  const [conditions, setConditions] = useState<Condition[]>([]);
-  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
+interface ApiResponse {
+  result: {
+    packagedReadings: {
+      name: string;
+      isPublic: boolean;
+      isTraining: boolean;
+      universalReadingsTrainings: {
+        measurment: string;
+        unitName: string;
+        date: string;
+        isSucessTraining: boolean | null;
+      }[];
+    }[];
+  };
+}
+
+const WeightlifterConditions: React.FC = () => {
+  const [conditions, setConditions] = useState<RenderData[]>([]);
+  const [trainingLogs, setTrainingLogs] = useState<RenderData[]>([]);
+  const [visibleGraphs, setVisibleGraphs] = useState<RenderData[]>([]);
   const [needsRefresh, setNeedsRefresh] = useState<boolean>(true);
-  // Fetch existing conditions (simulated)
-  useEffect(() => {
-    const fetchConditions = async () => {
-      const data: Condition[] = [
-        { title: 'Condition 1', isPublic: true },
-        { title: 'Condition 2', isPublic: false },
-      ];
-      setConditions(data);
-    };
+  const authInfo = useContext(AuthContext);
 
-    fetchConditions();
-  }, []);
+  const fetchAllUserData = async (): Promise<void> => {
+    try {
+      const response: ApiResponse =
+        await apiTerminal.fetchAllUserTrainingAndUniversalLogs(
+          authInfo.authInfo.token
+        );
+      const { packagedReadings } = response.result;
 
-  // Effect that triggers when formSubmitted changes and on initial load
-  useEffect(() => {
-    console.log('Form submitted state changed:', formSubmitted);
-    if (formSubmitted) {
-      console.log('New condition was added!');
+      const conditionData: RenderData[] = packagedReadings
+        .filter(item => !item.isTraining)
+        .map(item => ({
+          title: item.name,
+          isPublic: item.isPublic,
+          data: item.universalReadingsTrainings.map(reading => ({
+            measurement: reading.measurment,
+            unitName: reading.unitName,
+            date: reading.date,
+            isSuccessTraining: reading.isSucessTraining,
+          })),
+        }));
+
+      const trainingData: RenderData[] = packagedReadings
+        .filter(item => item.isTraining)
+        .map(item => ({
+          title: item.name,
+          isPublic: item.isPublic,
+          data: item.universalReadingsTrainings.map(reading => ({
+            measurement: reading.measurment,
+            unitName: reading.unitName,
+            date: reading.date,
+            isSuccessTraining: reading.isSucessTraining,
+          })),
+        }));
+
+      setConditions(conditionData);
+      setTrainingLogs(trainingData);
+    } catch (error) {
+      console.error('Error fetching user data:', error);
     }
-  }, [formSubmitted]);
+  };
+
+  useEffect(() => {
+    if (needsRefresh) {
+      fetchAllUserData().then(() => setNeedsRefresh(false));
+    }
+  }, [needsRefresh]);
+
+  const UpdateUniversalReadingPublicity = async (
+    value: boolean,
+    title: string
+  ): Promise<void> => {
+    console.log(`IsPublic for ${title} changed to:`, value);
+    const resposne = await apiTerminal.UpdateUniversalReadingPublicity(
+      title,
+      value,
+      authInfo.authInfo.token
+    );
+  };
+  const UpdateTrainingPublicity = async (
+    value: boolean,
+    title: string
+  ): Promise<void> => {
+    console.log(`IsPublic for ${title} changed to:`, value);
+    const resposne = await apiTerminal.UpdateTrainingLogPublicity(
+      title,
+      value,
+      authInfo.authInfo.token
+    );
+  };
+  const toggleVisibility = (
+    title: string,
+    isVisible: boolean,
+    type: 'condition' | 'training'
+  ): void => {
+    const targetArray = type === 'condition' ? conditions : trainingLogs;
+    const targetItem = targetArray.find(item => item.title === title);
+    if (!targetItem) return;
+
+    if (isVisible) {
+      setVisibleGraphs(prev => [...prev, targetItem]);
+    } else {
+      setVisibleGraphs(prev => prev.filter(item => item.title !== title));
+    }
+  };
 
   return (
     <div style={containerStyle}>
-      {/* Column with New Condition Form and Condition Managers */}
       <div style={leftColumnStyle}>
-        {/* New Condition Form */}
-        <NewConditionForm
-          onFormSubmit={() => setFormSubmitted(prev => !prev)}
-        />
+        <NewConditionForm onFormSubmit={() => setNeedsRefresh(true)} />
 
-        {/* Scrollable Conditions Container */}
         <div style={conditionsContainerStyle}>
           {conditions.map((condition, index) => (
             <ConditionManager
               key={index}
               title={condition.title}
               isMakePublic={condition.isPublic}
-              isVisible={true}
+              isVisible={visibleGraphs.some(
+                item => item.title === condition.title
+              )}
               onToggleMakePublic={value => {
                 const updatedConditions = [...conditions];
                 updatedConditions[index].isPublic = value;
                 setConditions(updatedConditions);
+
+                UpdateUniversalReadingPublicity(value, condition.title);
               }}
-              onToggleVisible={value => {
-                console.log(`Toggle Visible for ${condition.title}:`, value);
-              }}
+              onToggleVisible={value =>
+                toggleVisibility(condition.title, value, 'condition')
+              }
             />
           ))}
         </div>
       </div>
 
-      {/*  GraphManager Container */}
       <div style={GraphManagerContainerStyle}>
-        <GraphManager datasets={testData1} />
+        <GraphManager datasets={visibleGraphs} />
       </div>
-      <div>
-        {/* need custom styling*/}
+
+      <div style={leftColumnStyle}>
         <NewTrainingLog isRunningRefreshPage={setNeedsRefresh} />
-        {/* map all data to thisa */}
         <div style={conditionsContainerStyle}>
-          {conditions.map((condition, index) => (
+          {trainingLogs.map((log, index) => (
             <TrainingLogManager
               key={index}
-              title={condition.title}
-              isMakePublic={condition.isPublic}
-              isVisible={true}
+              title={log.title}
+              isMakePublic={log.isPublic}
+              isVisible={visibleGraphs.some(item => item.title === log.title)}
               onToggleMakePublic={value => {
-                const updatedConditions = [...conditions];
-                updatedConditions[index].isPublic = value;
-                setConditions(updatedConditions);
+                const updatedLogs = [...trainingLogs];
+                updatedLogs[index].isPublic = value;
+                setTrainingLogs(updatedLogs);
+
+                UpdateTrainingPublicity(value, log.title);
               }}
-              onToggleVisible={value => {
-                console.log(`Toggle Visible for ${condition.title}:`, value);
-              }}
+              onToggleVisible={value =>
+                toggleVisibility(log.title, value, 'training')
+              }
             />
           ))}
         </div>
@@ -125,10 +188,10 @@ const WeightlifterConditions = () => {
   );
 };
 
-// Updated Styles
+// Styles
 const containerStyle: React.CSSProperties = {
   display: 'flex',
-  flexDirection: 'row', // Main container is a row
+  flexDirection: 'row',
   alignItems: 'flex-start',
   margin: '20px',
   padding: '10px',
@@ -137,7 +200,7 @@ const containerStyle: React.CSSProperties = {
 
 const leftColumnStyle: React.CSSProperties = {
   display: 'flex',
-  flexDirection: 'column', // Left column is a column
+  flexDirection: 'column',
   width: '300px',
   gap: '20px',
 };

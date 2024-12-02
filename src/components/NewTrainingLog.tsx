@@ -1,4 +1,6 @@
-import React, { useState, useEffect, FC } from 'react';
+import React, { useState, useEffect, FC, useContext } from 'react';
+import { AuthContext } from '../store/authContext';
+import apiTerminal from '../client/apiTerminal';
 
 interface NewTrainingLogProps {
   isRunningRefreshPage: (success: boolean) => void;
@@ -14,7 +16,6 @@ interface SetObject {
 const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
   const userId = '0000';
 
-  // State for form inputs
   const [titles, setTitles] = useState<string[]>([]);
   const [units, setUnits] = useState<string[]>([]);
   const [title, setTitle] = useState<string>('');
@@ -26,31 +27,53 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
   const [targetReps, setTargetReps] = useState<string>('');
   const [date, setDate] = useState<string>('');
   const [setObjects, setSetObjects] = useState<SetObject[]>([]);
+  const authInfo = useContext(AuthContext);
 
   useEffect(() => {
-    const titlesData = ['Squat', 'Deadlift', 'Bench Press', 'Overhead Press'];
-    const unitsData = [
-      'kg',
-      'lbs',
-      'g',
-      'mg',
-      'oz',
-      'cm',
-      'm',
-      'mm',
-      'inch',
-      'ft',
-      'yd',
-      'mi',
-    ];
-    setTitles(titlesData);
-    setUnits(unitsData);
+    const fetchData = async () => {
+      try {
+        const titlesResponse = await apiTerminal.FetchAllTrainingTitles(
+          authInfo.authInfo.token
+        );
+        const unitsResponse = await apiTerminal.fetchAllTrainingUnits(
+          authInfo.authInfo.token
+        );
+
+        const titlesData = titlesResponse.result || [];
+        const unitsData = unitsResponse.result || [];
+
+        setTitles(titlesData);
+        setUnits(unitsData);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
   }, []);
 
-  useEffect(() => {
-    if (targetSets && parseInt(targetSets) > 0) {
-      handleAddSets();
+  const handleAddSets = () => {
+    const setsCount = parseInt(targetSets, 10);
+
+    // Reset the set objects with new sets count
+    if (!isNaN(setsCount) && setsCount > 0) {
+      const newSets: SetObject[] = Array.from(
+        { length: setsCount },
+        (_, i) => ({
+          doneSetCount: i + 1,
+          doneRepCount: 0,
+          picture: null,
+          comments: '',
+        })
+      );
+      setSetObjects(newSets);
+    } else {
+      setSetObjects([]);
     }
+  };
+
+  useEffect(() => {
+    handleAddSets();
   }, [targetSets]);
 
   const handleSetChange = (index: number, key: keyof SetObject, value: any) => {
@@ -59,45 +82,44 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
     setSetObjects(updatedSets);
   };
 
-  const handleAddSets = () => {
-    const setsCount = parseInt(targetSets);
-    if (isNaN(setsCount) || setsCount <= 0) return;
-
-    const newSets: SetObject[] = Array(setsCount)
-      .fill(0)
-      .map((_, i) => ({
-        doneSetCount: i + 1,
-        doneRepCount: 0,
-        picture: null,
-        comments: '',
-      }));
-    setSetObjects(newSets);
-  };
-
   const handleSubmit = async () => {
-    const logData = {
-      userId,
-      title: title === 'new' ? newTitle : title,
-      targetWeight,
-      unit: unit === 'new' ? newUnit : unit,
-      targetSets,
-      targetReps,
-      date,
-      setObjects,
+    const trainingData = {
+      Name: title === 'new' ? newTitle : title,
+      Date: date,
+      TargetWeight: parseFloat(targetWeight),
+      UnitName: unit === 'new' ? newUnit : unit,
+      TargetSets: parseInt(targetSets, 10),
+      TargetReps: parseInt(targetReps, 10),
+      Sets: setObjects.map(set => ({
+        Reps: set.doneRepCount,
+        Text: set.comments || undefined,
+        Image: set.picture || undefined,
+      })),
     };
 
-    console.log('Submitting:', logData);
-    setTitle('');
-    setNewTitle('');
-    setTargetWeight('');
-    setUnit('');
-    setNewUnit('');
-    setTargetSets('');
-    setTargetReps('');
-    setDate('');
-    setSetObjects([]);
+    try {
+      const response = await apiTerminal.CreateNewTraining(
+        trainingData,
+        authInfo.authInfo.token
+      );
 
-    isRunningRefreshPage(true);
+      console.log('Training log created successfully:', response);
+
+      // Reset form
+      setTitle('');
+      setNewTitle('');
+      setTargetWeight('');
+      setUnit('');
+      setNewUnit('');
+      setTargetSets('');
+      setTargetReps('');
+      setDate('');
+      setSetObjects([]);
+
+      isRunningRefreshPage(true);
+    } catch (error) {
+      console.error('Error creating new training log:', error);
+    }
   };
 
   return (
@@ -117,6 +139,7 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
               value={title}
               onChange={e => setTitle(e.target.value)}
             >
+              <option value=''>Select a title...</option>
               {titles.map(t => (
                 <option key={t} value={t}>
                   {t}
@@ -165,6 +188,7 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
               value={unit}
               onChange={e => setUnit(e.target.value)}
             >
+              <option value=''>Select a unit...</option>
               {units.map(u => (
                 <option key={u} value={u}>
                   {u}
@@ -212,7 +236,11 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
                 placeholder='Done Rep Count'
                 value={set.doneRepCount}
                 onChange={e =>
-                  handleSetChange(index, 'doneRepCount', e.target.value)
+                  handleSetChange(
+                    index,
+                    'doneRepCount',
+                    parseInt(e.target.value)
+                  )
                 }
                 style={styles.inputShort}
               />

@@ -3,16 +3,17 @@ import { Line } from 'react-chartjs-2';
 import 'chart.js/auto';
 import { ChartOptions } from 'chart.js';
 
-interface DataItem {
-  x: string;
-  y: number;
+interface Measurement {
+  measurement: string;
+  unitName: string;
+  date: string;
 }
 
 interface GraphManagerProps {
   datasets: {
     title: string;
-    data: DataItem[];
-    unit: string;
+    data: Measurement[];
+    isPublic: boolean;
   }[];
 }
 
@@ -26,7 +27,10 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
   const chartData = {
     datasets: datasets.map((dataset, index) => ({
       label: dataset.title,
-      data: dataset.data,
+      data: dataset.data.map(item => ({
+        x: item.date,
+        y: parseFloat(item.measurement), // Ensure numerical values
+      })),
       borderColor: colors[index],
       backgroundColor: colors[index],
       fill: false,
@@ -48,10 +52,16 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
           text: 'Date',
         },
       },
+      y: {
+        title: {
+          display: true,
+          text: 'Measurement',
+        },
+      },
     },
     plugins: {
       legend: {
-        display: false, // Disable default legend
+        display: true, // Enable legend for better understanding
       },
     },
     maintainAspectRatio: false,
@@ -77,7 +87,7 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
               }}
             ></span>
             <span>
-              {dataset.title} ({dataset.unit})
+              {dataset.title} ({dataset.data[0]?.unitName || ''})
             </span>
           </div>
         ))}

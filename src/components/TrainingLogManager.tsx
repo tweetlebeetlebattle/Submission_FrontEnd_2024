@@ -29,7 +29,6 @@ const TrainingLogManager: React.FC<TrainingLogManagerProps> = ({
     >
       <h3>{title}</h3>
 
-      {/* Toggle Switches */}
       <div
         style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
       >

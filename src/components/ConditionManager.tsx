@@ -22,7 +22,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
   const [inputValue, setInputValue] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Handle form submission to open the modal
   const handleSubmit = () => {
     if (inputValue.trim() === '') {
       alert('Input value cannot be empty');
@@ -31,7 +30,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
     setIsModalOpen(true); // Open the confirmation modal
   };
 
-  // Confirm the submission inside the modal
   const handleConfirmSubmit = () => {
     console.log('DateTime:', dateTime);
     console.log('Input Value:', inputValue);
