@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import apiTerminal from '../client/apiTerminal';
 import { AuthContext } from '../store/authContext';
+import { useNavigate } from 'react-router-dom';
 
 interface UnapprovedData {
   id: string;
@@ -20,6 +21,7 @@ const BlogForApproval: React.FC<Props> = ({ data, onActionComplete }) => {
   const [blogText, setBlogText] = useState<string | null>(null);
   const [loadingText, setLoadingText] = useState(true);
   const [errorText, setErrorText] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogText = async () => {
@@ -54,7 +56,8 @@ const BlogForApproval: React.FC<Props> = ({ data, onActionComplete }) => {
       await apiTerminal.updateBlogCommentStatus(
         data.id,
         'approved',
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
       onActionComplete();
     } catch (error) {
@@ -68,7 +71,8 @@ const BlogForApproval: React.FC<Props> = ({ data, onActionComplete }) => {
       await apiTerminal.updateBlogCommentStatus(
         data.id,
         'rejected',
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
       onActionComplete();
     } catch (error) {

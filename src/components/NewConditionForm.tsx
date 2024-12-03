@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import BasicModal from '../modal/BasicModal';
 import { AuthContext } from '../store/authContext';
 import apiTerminal from '../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface NewConditionFormProps {
   onFormSubmit: () => void;
@@ -18,6 +19,7 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
   const [measurement, setMeasurement] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleCreateCondition = () => {
     if (
@@ -37,7 +39,8 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
       dateTime,
       measurement,
       measurementUnit,
-      authInfo.authInfo.token
+      authInfo.authInfo.token,
+      navigate
     );
     setNewConditionTitle('');
     setDateTime(new Date().toISOString().slice(0, 16));

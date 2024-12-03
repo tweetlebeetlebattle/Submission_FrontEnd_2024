@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import BlogForApproval from '../../components/BlogForApproval';
 import { AuthContext } from '../../store/authContext';
 import apiTerminal from '../../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface UnapprovedData {
   id: string;
@@ -17,6 +18,7 @@ const AdminBlogManager = () => {
   const [error, setError] = useState<string | null>(null);
   const [refreshTrigger, setRefreshTrigger] = useState(false);
   const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUnapprovedBlogs = async () => {
@@ -24,7 +26,8 @@ const AdminBlogManager = () => {
       setError(null);
       try {
         const response = await apiTerminal.fetchUnapprovedBlogsComments(
-          authInfo.authInfo.token
+          authInfo.authInfo.token,
+          navigate
         );
 
         const transformedBlogs = response.unapprovedData.map((item: any) => ({

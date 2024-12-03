@@ -6,6 +6,7 @@ import NewTrainingLog from '../../components/NewTrainingLog';
 import TrainingLogManager from '../../components/TrainingLogManager';
 import { AuthContext } from '../../store/authContext';
 import apiTerminal from '../../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface Measurement {
   measurement: string;
@@ -42,12 +43,14 @@ const WeightlifterConditions: React.FC = () => {
   const [visibleGraphs, setVisibleGraphs] = useState<RenderData[]>([]);
   const [needsRefresh, setNeedsRefresh] = useState<boolean>(true);
   const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const fetchAllUserData = async (): Promise<void> => {
     try {
       const response: ApiResponse =
         await apiTerminal.fetchAllUserTrainingAndUniversalLogs(
-          authInfo.authInfo.token
+          authInfo.authInfo.token,
+          navigate
         );
       const { packagedReadings } = response.result;
 
@@ -98,7 +101,8 @@ const WeightlifterConditions: React.FC = () => {
     const resposne = await apiTerminal.UpdateUniversalReadingPublicity(
       title,
       value,
-      authInfo.authInfo.token
+      authInfo.authInfo.token,
+      navigate
     );
   };
   const UpdateTrainingPublicity = async (
@@ -109,7 +113,8 @@ const WeightlifterConditions: React.FC = () => {
     const resposne = await apiTerminal.UpdateTrainingLogPublicity(
       title,
       value,
-      authInfo.authInfo.token
+      authInfo.authInfo.token,
+      navigate
     );
   };
   const toggleVisibility = (

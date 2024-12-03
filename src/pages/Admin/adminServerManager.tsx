@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import ServerManager from '../../components/ServerManager';
 import { AuthContext } from '../../store/authContext';
 import apiTerminal from '../../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface ServerData {
   id: string;
@@ -15,13 +16,15 @@ const AdminServerManager: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [refresh, setRefresh] = useState<boolean>(false);
+  const navigate = useNavigate();
 
   const fetchServerData = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await apiTerminal.fetchAllServerLogs(
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
       const transformedData: ServerData[] = response._ServerLogs.map(
         (log: any) => ({

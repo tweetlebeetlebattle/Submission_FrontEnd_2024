@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import BlogDefaultDisplay from '../../components/BlogDefaultDisplay';
 import { AuthContext } from '../../store/authContext';
 import apiTerminal from '../../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface Comment {
   id: string;
@@ -25,13 +26,15 @@ const DiverBlog = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await apiTerminal.fetchApprovedDiverBlogsComments();
+        const response =
+          await apiTerminal.fetchApprovedDiverBlogsComments(navigate);
 
         const transformedBlogs = response.map((blog: any) => ({
           id: blog.blogId,
@@ -65,7 +68,8 @@ const DiverBlog = () => {
       const response = await apiTerminal.createDiverBlog(
         blogText,
         blogImage as File,
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
       alert('Blog created successfully!');
     } catch (error) {
@@ -83,12 +87,13 @@ const DiverBlog = () => {
         blogId,
         blogText,
         blogImage as File,
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
-      alert('Blog created successfully!');
+      alert('Comment created successfully!');
     } catch (error) {
-      console.error('Failed to create blog:', error);
-      alert('An error occurred while creating the blog. Please try again.');
+      console.error('Failed to create Comment:', error);
+      alert('An error occurred while creating the Comment. Please try again.');
     }
   };
   return (

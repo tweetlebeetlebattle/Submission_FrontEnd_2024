@@ -82,7 +82,7 @@ const Onboarding = () => {
     }
 
     try {
-      const response = await apiTerminal.login(email, password);
+      const response = await apiTerminal.login(email, password, navigate);
       console.log(response);
       await storeInfo(response);
       navigate('/overview');

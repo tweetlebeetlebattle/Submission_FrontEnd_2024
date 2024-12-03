@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../store/authContext';
 import apiTerminal from '../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface FeedbackData {
   id: string;
@@ -19,7 +20,7 @@ interface FeedbackData {
 
 interface FeedbackManagerProps {
   feedback: FeedbackData;
-  onDelete: () => void; // Callback for notifying parent about deletion
+  onDelete: () => void;
 }
 
 const FeedbackManager: React.FC<FeedbackManagerProps> = ({
@@ -28,8 +29,8 @@ const FeedbackManager: React.FC<FeedbackManagerProps> = ({
 }) => {
   const authInfo = useContext(AuthContext);
   const [textContent, setTextContent] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // Fetch the text content from the provided URL
   useEffect(() => {
     const fetchTextContent = async () => {
       if (feedback.text) {
@@ -49,7 +50,7 @@ const FeedbackManager: React.FC<FeedbackManagerProps> = ({
 
   const handleDelete = async (id: string) => {
     try {
-      await apiTerminal.deleteFeedback(id, authInfo.authInfo.token);
+      await apiTerminal.deleteFeedback(id, authInfo.authInfo.token, navigate);
       console.log('Deleted feedback with ID:', id);
       onDelete(); // Notify parent about the deletion
     } catch (error) {

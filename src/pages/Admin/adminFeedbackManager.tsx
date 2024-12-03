@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import FeedbackManager from '../../components/FeedbackManager';
 import { AuthContext } from '../../store/authContext';
 import apiTerminal from '../../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface FeedbackData {
   id: string;
@@ -22,11 +23,13 @@ const AdminFeedbackManager: React.FC = () => {
   const authInfo = useContext(AuthContext);
   const [feedbacks, setFeedbacks] = useState<FeedbackData[]>([]);
   const [refresh, setRefresh] = useState(false);
+  const navigate = useNavigate();
 
   const fetchFeedbackData = async () => {
     try {
       const response = await apiTerminal.fetchAllFeedback(
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
       const transformedFeedbacks: FeedbackData[] = response.feedbacks.map(
         (feedback: any) => ({

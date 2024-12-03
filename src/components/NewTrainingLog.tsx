@@ -1,6 +1,7 @@
 import React, { useState, useEffect, FC, useContext } from 'react';
 import { AuthContext } from '../store/authContext';
 import apiTerminal from '../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 interface NewTrainingLogProps {
   isRunningRefreshPage: (success: boolean) => void;
@@ -28,15 +29,18 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
   const [date, setDate] = useState<string>('');
   const [setObjects, setSetObjects] = useState<SetObject[]>([]);
   const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const titlesResponse = await apiTerminal.FetchAllTrainingTitles(
-          authInfo.authInfo.token
+          authInfo.authInfo.token,
+          navigate
         );
         const unitsResponse = await apiTerminal.fetchAllTrainingUnits(
-          authInfo.authInfo.token
+          authInfo.authInfo.token,
+          navigate
         );
 
         const titlesData = titlesResponse.result || [];
@@ -100,7 +104,8 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
     try {
       const response = await apiTerminal.CreateNewTraining(
         trainingData,
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
 
       console.log('Training log created successfully:', response);

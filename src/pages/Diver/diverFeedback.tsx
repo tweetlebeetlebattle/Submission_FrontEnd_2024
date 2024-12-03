@@ -2,6 +2,7 @@ import React, { useState, useEffect, ChangeEvent, useContext } from 'react';
 import apiTerminal from '../../client/apiTerminal';
 import ValueBar from '../../components/ValueBar';
 import { AuthContext } from '../../store/authContext';
+import { useNavigate } from 'react-router-dom';
 
 interface LocationState {
   latitude: number | null;
@@ -25,13 +26,14 @@ const DiverFeedback = () => {
   const [unitOptions, setUnitOptions] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const locations = await apiTerminal.fetchAllLocations();
+        const locations = await apiTerminal.fetchAllLocations(navigate);
         setLocationOptions(locations);
-        const units = await apiTerminal.fetchAllUnits();
+        const units = await apiTerminal.fetchAllUnits(navigate);
         setUnitOptions(units);
       } catch (error) {
         console.error('Error fetching options:', error);
@@ -83,7 +85,8 @@ const DiverFeedback = () => {
         windUnit ?? null,
         file ?? null,
         text ?? null,
-        authInfo.authInfo.token
+        authInfo.authInfo.token,
+        navigate
       );
 
       alert('Feedback sent successfully!');
