@@ -59,7 +59,12 @@ const Onboarding = () => {
     }
 
     try {
-      const response = await apiTerminal.register(username, email, password);
+      const response = await apiTerminal.register(
+        username,
+        email,
+        password,
+        navigate
+      );
       await storeInfo(response);
       navigate('/overview');
     } catch (error: any) {

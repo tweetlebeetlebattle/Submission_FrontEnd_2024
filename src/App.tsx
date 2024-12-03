@@ -26,6 +26,8 @@ import {
 } from './utils/componentProps';
 import NavigationBar from './components/NavigationBar';
 import { AuthProvider } from './store/authContext';
+import BadRequest from './pages/badRequest';
+import NotFound from './pages/notFount';
 
 function AppContent() {
   const location = useLocation();
@@ -79,6 +81,8 @@ function AppContent() {
         />
         <Route path='/onboarding' element={<Onboarding />} />
         <Route path='/overview' element={<Overview />} />
+        <Route path='/500' element={<BadRequest />} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </div>
   );

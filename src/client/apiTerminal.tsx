@@ -1,7 +1,12 @@
 import { fetch, post, postFormData } from './webClient';
 
 const apiTerminal = {
-  async register(username: string, email: string, password: string) {
+  async register(
+    username: string,
+    email: string,
+    password: string,
+    navigate: (path: string, state?: any) => void
+  ) {
     try {
       const response = await post('/api/Auth/register', {
         username,
@@ -9,8 +14,16 @@ const apiTerminal = {
         password,
       });
       return response;
-    } catch (e) {
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
       console.log(e);
+      throw e;
     }
   },
   async login(email: string, password: string) {
