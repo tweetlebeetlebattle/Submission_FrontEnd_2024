@@ -1,7 +1,8 @@
-import React, { useContext, useState } from 'react';
+import React from 'react';
 import Blog from './Blog';
 import SearchBar from './SearchBar';
 import CreateBlog from './CreateBlog';
+import Pagination from './Pagination';
 import { AuthContext } from '../store/authContext';
 
 interface Comment {
@@ -29,17 +30,22 @@ interface BlogDefaultDisplayProps {
     blogText: string,
     blogImage: File | null
   ) => void;
+  totalPages: number;
+  currentPage: number;
+  onPageChange: (page: number) => void;
 }
 
 const BlogDefaultDisplay: React.FC<BlogDefaultDisplayProps> = ({
   blogPostsData,
   handleCreateBlog,
   handleCreateComment,
+  totalPages,
+  currentPage,
+  onPageChange,
 }) => {
-  const authInfo = useContext(AuthContext);
+  const authInfo = React.useContext(AuthContext);
+  const showCreateBlogForm = authInfo.authInfo.username !== '';
 
-  const [showCreateBlogForm] = useState(authInfo.authInfo.username !== '');
-  // should be paginated:
   return (
     <div>
       <SearchBar />
@@ -51,6 +57,11 @@ const BlogDefaultDisplay: React.FC<BlogDefaultDisplayProps> = ({
           handleCreateComment={handleCreateComment}
         />
       ))}
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={onPageChange}
+      />
     </div>
   );
 };

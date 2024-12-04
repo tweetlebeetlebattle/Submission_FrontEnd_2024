@@ -30,14 +30,15 @@ const AdminBlogManager = () => {
           navigate
         );
 
-        const transformedBlogs = response.unapprovedData.map((item: any) => ({
-          id: item.id,
-          text: item.textUrl,
-          username: item.username,
-          timestamp: item.timeOfPosting,
-          imageUrl: item.pictureUrl,
-        }));
-
+        const transformedBlogs = response.data.unapprovedData.map(
+          (item: any) => ({
+            id: item.id,
+            text: item.textUrl || '',
+            username: item.username,
+            timestamp: item.timeOfPosting,
+            imageUrl: item.pictureUrl || null,
+          })
+        );
         setBlogs(transformedBlogs);
       } catch (err) {
         setError('Failed to fetch unapproved blogs. Please try again later.');

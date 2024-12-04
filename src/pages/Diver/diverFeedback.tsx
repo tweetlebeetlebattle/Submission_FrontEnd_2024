@@ -31,16 +31,30 @@ const DiverFeedback = () => {
   useEffect(() => {
     const fetchOptions = async () => {
       try {
-        const locations = await apiTerminal.fetchAllLocations(navigate);
-        setLocationOptions(locations);
-        const units = await apiTerminal.fetchAllUnits(navigate);
-        setUnitOptions(units);
+        const response = await apiTerminal.fetchAllLocations(navigate);
+        if (response && response.data) {
+          setLocationOptions(response.data);
+        } else {
+          console.error('Unexpected response format:', response);
+        }
       } catch (error) {
-        console.error('Error fetching options:', error);
+        console.error('Error fetching locations:', error);
       }
     };
-
+    const fetchUnits = async () => {
+      try {
+        const response = await apiTerminal.fetchAllUnits(navigate);
+        if (response && response.data) {
+          setUnitOptions(response.data);
+        } else {
+          console.error('Unexpected response format:', response);
+        }
+      } catch (error) {
+        console.error('Error fetching locations:', error);
+      }
+    };
     fetchOptions();
+    fetchUnits();
   }, []);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -97,83 +111,157 @@ const DiverFeedback = () => {
   };
 
   return (
-    <div>
-      <h1>Diver Feedback</h1>
-      <ValueBar
-        options={locationOptions}
-        selectedValue={selectedLocation}
-        setSelectedValue={setSelectedLocation}
-        onSubmit={() => alert(`Selected location: ${selectedLocation}`)}
-      />
-
-      <textarea
-        value={text}
-        onChange={e => setText(e.target.value)}
-        placeholder='Enter your feedback...'
-        maxLength={600}
-        rows={4}
-        style={{ width: '100%' }}
-      />
-      <input type='file' onChange={handleFileChange} />
-      <button onClick={handleLocationFetch}>Get Location</button>
-
-      <div>
-        <h3>Wave Height</h3>
-        <input
-          type='number'
-          value={waveHeight ?? ''}
-          onChange={e => setWaveHeight(Number(e.target.value))}
-          placeholder='Enter wave height'
+    <div style={containerStyle}>
+      <h1 style={headerStyle}>Diver Feedback</h1>
+      <div style={formStyle}>
+        <ValueBar
+          options={locationOptions}
+          selectedValue={selectedLocation}
+          setSelectedValue={setSelectedLocation}
         />
-        <select onChange={e => setWaveUnit(e.target.value)}>
-          <option value=''>Select Unit</option>
-          {unitOptions.map(unit => (
-            <option key={unit} value={unit}>
-              {unit}
-            </option>
-          ))}
-        </select>
-      </div>
 
-      <div>
-        <h3>Temperature</h3>
-        <input
-          type='number'
-          value={temp ?? ''}
-          onChange={e => setTemp(Number(e.target.value))}
-          placeholder='Enter temperature'
+        <textarea
+          value={text}
+          onChange={e => setText(e.target.value)}
+          placeholder='Enter your feedback...'
+          maxLength={600}
+          rows={4}
+          style={textareaStyle}
         />
-        <select onChange={e => setTempUnit(e.target.value)}>
-          <option value=''>Select Unit</option>
-          {unitOptions.map(unit => (
-            <option key={unit} value={unit}>
-              {unit}
-            </option>
-          ))}
-        </select>
-      </div>
+        <input type='file' onChange={handleFileChange} style={inputStyle} />
+        <button onClick={handleLocationFetch} style={buttonStyle}>
+          Get Location
+        </button>
 
-      <div>
-        <h3>Wind Speed</h3>
-        <input
-          type='number'
-          value={windSpeed ?? ''}
-          onChange={e => setWindSpeed(Number(e.target.value))}
-          placeholder='Enter wind speed'
-        />
-        <select onChange={e => setWindUnit(e.target.value)}>
-          <option value=''>Select Unit</option>
-          {unitOptions.map(unit => (
-            <option key={unit} value={unit}>
-              {unit}
-            </option>
-          ))}
-        </select>
-      </div>
+        <div style={inputGroupStyle}>
+          <h3>Wave Height</h3>
+          <input
+            type='number'
+            value={waveHeight ?? ''}
+            onChange={e => setWaveHeight(Number(e.target.value))}
+            placeholder='Enter wave height'
+            style={inputStyle}
+          />
+          <select
+            onChange={e => setWaveUnit(e.target.value)}
+            style={inputStyle}
+          >
+            <option value=''>Select Unit</option>
+            {unitOptions.map(unit => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </div>
 
-      <button onClick={handleSubmit}>Submit Feedback</button>
+        <div style={inputGroupStyle}>
+          <h3>Temperature</h3>
+          <input
+            type='number'
+            value={temp ?? ''}
+            onChange={e => setTemp(Number(e.target.value))}
+            placeholder='Enter temperature'
+            style={inputStyle}
+          />
+          <select
+            onChange={e => setTempUnit(e.target.value)}
+            style={inputStyle}
+          >
+            <option value=''>Select Unit</option>
+            {unitOptions.map(unit => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div style={inputGroupStyle}>
+          <h3>Wind Speed</h3>
+          <input
+            type='number'
+            value={windSpeed ?? ''}
+            onChange={e => setWindSpeed(Number(e.target.value))}
+            placeholder='Enter wind speed'
+            style={inputStyle}
+          />
+          <select
+            onChange={e => setWindUnit(e.target.value)}
+            style={inputStyle}
+          >
+            <option value=''>Select Unit</option>
+            {unitOptions.map(unit => (
+              <option key={unit} value={unit}>
+                {unit}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <button onClick={handleSubmit} style={buttonStyle}>
+          Submit Feedback
+        </button>
+      </div>
     </div>
   );
+};
+
+const containerStyle: React.CSSProperties = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '20px',
+  minHeight: '100vh',
+  backgroundColor: '#f0f4f8',
+};
+
+const headerStyle: React.CSSProperties = {
+  marginBottom: '20px',
+  fontSize: '2em',
+  fontWeight: 'bold',
+  textAlign: 'center',
+};
+
+const formStyle: React.CSSProperties = {
+  width: '100%',
+  maxWidth: '600px',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  padding: '20px',
+  backgroundColor: '#ffffff',
+  borderRadius: '10px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+};
+
+const inputStyle: React.CSSProperties = {
+  width: '100%',
+  margin: '10px 0',
+  padding: '10px',
+  borderRadius: '5px',
+  border: '1px solid #ccc',
+};
+
+const textareaStyle: React.CSSProperties = {
+  ...inputStyle,
+  resize: 'none',
+};
+
+const buttonStyle: React.CSSProperties = {
+  padding: '10px 20px',
+  marginTop: '10px',
+  borderRadius: '5px',
+  backgroundColor: '#007bff',
+  color: '#ffffff',
+  border: 'none',
+  cursor: 'pointer',
+};
+
+const inputGroupStyle: React.CSSProperties = {
+  width: '100%',
+  marginBottom: '15px',
 };
 
 export default DiverFeedback;

@@ -25,8 +25,26 @@ const WeightlifterBlog = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 4;
   const authInfo = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTotalPages = async () => {
+      try {
+        const response =
+          await apiTerminal.FetchNumberOfApprovedWeightlifterBlogs(navigate);
+        const totalBlogs = response.data;
+        setTotalPages(Math.ceil(totalBlogs / blogsPerPage));
+      } catch (error) {
+        console.error('Failed to fetch total pages:', error);
+      }
+    };
+
+    fetchTotalPages();
+  }, []);
 
   useEffect(() => {
     const fetchBlogs = async () => {
@@ -34,7 +52,11 @@ const WeightlifterBlog = () => {
       setError(null);
       try {
         const response =
-          await apiTerminal.fetchApprovedWeightlifterBlogsComments(navigate);
+          await apiTerminal.fetchApprovedWeightlifterBlogsComments(
+            blogsPerPage,
+            currentPage,
+            navigate
+          );
 
         const transformedBlogs = response.map((blog: any) => ({
           id: blog.blogId,
@@ -96,12 +118,18 @@ const WeightlifterBlog = () => {
       alert('An error occurred while creating the blog. Please try again.');
     }
   };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   return (
     <div>
       <BlogDefaultDisplay
         blogPostsData={blogs}
         handleCreateBlog={handleCreateBlog}
         handleCreateComment={handleCreateComment}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
       />
     </div>
   );

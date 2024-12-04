@@ -24,6 +24,8 @@ const Onboarding = () => {
   const [isPasswordMasked, setIsPasswordMasked] = useState(true);
   const [registerError, setRegisterError] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+  const [isLoginLoading, setIsLoginLoading] = useState(false);
 
   const isPasswordLengthValid = (password: string) => password.length >= 6;
   const arePasswordsMatching = (password: string, confirmPassword: string) =>
@@ -46,6 +48,8 @@ const Onboarding = () => {
   };
 
   const handleRegisterSubmit = async () => {
+    if (isRegisterLoading) return;
+
     const { username, email, password, confirmPassword } = registerCredentials;
     if (
       !isEmailValid(email) ||
@@ -57,6 +61,8 @@ const Onboarding = () => {
       );
       return;
     }
+
+    setIsRegisterLoading(true);
 
     try {
       const response = await apiTerminal.register(
@@ -71,19 +77,24 @@ const Onboarding = () => {
       setRegisterError(
         error.response?.data?.error || 'An unexpected error occurred.'
       );
+    } finally {
+      setIsRegisterLoading(false);
     }
   };
 
   const handleLoginSubmit = async () => {
+    if (isLoginLoading) return;
+
     const { email, password } = loginCredentials;
     if (!isEmailValid(email) || !isPasswordLengthValid(password)) {
       setLoginError('Invalid email or password length.');
       return;
     }
 
+    setIsLoginLoading(true);
+
     try {
       const response = await apiTerminal.login(email, password, navigate);
-      console.log(response);
       await storeInfo(response);
       navigate('/overview');
     } catch (error: any) {
@@ -91,6 +102,8 @@ const Onboarding = () => {
         error.response?.data?.error ||
           'Invalid credentials or unexpected error.'
       );
+    } finally {
+      setIsLoginLoading(false);
     }
   };
 
@@ -154,8 +167,16 @@ const Onboarding = () => {
             {registerError}
           </div>
         )}
-        <button onClick={handleRegisterSubmit} style={buttonStyle}>
-          Register
+        <button
+          onClick={handleRegisterSubmit}
+          disabled={isRegisterLoading}
+          style={{
+            ...buttonStyle,
+            opacity: isRegisterLoading ? 0.6 : 1,
+            cursor: isRegisterLoading ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {isRegisterLoading ? 'Registering...' : 'Register'}
         </button>
       </div>
 
@@ -187,8 +208,16 @@ const Onboarding = () => {
         {loginError && (
           <div style={{ color: 'red', marginBottom: '10px' }}>{loginError}</div>
         )}
-        <button onClick={handleLoginSubmit} style={buttonStyle}>
-          Login
+        <button
+          onClick={handleLoginSubmit}
+          disabled={isLoginLoading}
+          style={{
+            ...buttonStyle,
+            opacity: isLoginLoading ? 0.6 : 1,
+            cursor: isLoginLoading ? 'not-allowed' : 'pointer',
+          }}
+        >
+          {isLoginLoading ? 'Logging in...' : 'Login'}
         </button>
       </div>
     </div>

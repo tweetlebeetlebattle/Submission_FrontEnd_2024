@@ -93,7 +93,6 @@ const DiverHistoricConditions = () => {
           options={optionsValue}
           selectedValue={selectedValue}
           setSelectedValue={setSelectedValue}
-          onSubmit={handleSubmit}
         />
       </div>
       <div style={{ position: 'relative', height: '40vh', width: '80vw' }}>

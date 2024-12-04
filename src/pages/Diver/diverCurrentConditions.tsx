@@ -60,7 +60,6 @@ const DiverCurrentConditions = () => {
           options={options}
           selectedValue={selectedValue}
           setSelectedValue={setSelectedValue}
-          onSubmit={handleSubmit}
         />
       </div>
       <div>

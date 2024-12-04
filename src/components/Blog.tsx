@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { AuthContext } from '../store/authContext';
 
 interface Comment {
@@ -31,8 +31,50 @@ const Blog: React.FC<BlogPostProps> = ({ blog, handleCreateComment }) => {
   const authInfo = useContext(AuthContext);
   const showCommentForm = authInfo.authInfo.username !== '';
 
+  const [blogText, setBlogText] = useState<string>('Loading...');
+  const [commentTexts, setCommentTexts] = useState<Record<string, string>>({});
   const [commentText, setCommentText] = useState('');
   const [commentImage, setCommentImage] = useState<File | null>(null);
+
+  useEffect(() => {
+    const fetchBlogText = async () => {
+      try {
+        const response = await fetch(blog.text);
+        const text = await response.text();
+        setBlogText(text);
+      } catch (error) {
+        setBlogText('Failed to load blog content.');
+      }
+    };
+    fetchBlogText();
+  }, [blog.text]);
+
+  useEffect(() => {
+    const fetchCommentTexts = async () => {
+      const promises = blog.comments.map(async comment => {
+        if (comment.text.startsWith('http')) {
+          try {
+            const response = await fetch(comment.text);
+            const text = await response.text();
+            return { id: comment.id, text };
+          } catch (error) {
+            return { id: comment.id, text: 'Failed to load comment content.' };
+          }
+        } else {
+          return { id: comment.id, text: comment.text };
+        }
+      });
+
+      const results = await Promise.all(promises);
+      const textsMap = results.reduce(
+        (acc, { id, text }) => ({ ...acc, [id]: text }),
+        {}
+      );
+      setCommentTexts(textsMap);
+    };
+
+    fetchCommentTexts();
+  }, [blog.comments]);
 
   const handleCommentSubmit = () => {
     if (!commentText.trim()) {
@@ -58,7 +100,7 @@ const Blog: React.FC<BlogPostProps> = ({ blog, handleCreateComment }) => {
       <h4 style={{ position: 'absolute', top: '20px', left: '20px' }}>
         {blog.username} - {new Date(blog.timestamp).toLocaleString()}
       </h4>
-      <p style={{ marginTop: '40px' }}>{blog.text}</p>
+      <p style={{ marginTop: '40px' }}>{blogText}</p>
       {blog.imageUrl && (
         <img
           src={blog.imageUrl}
@@ -76,7 +118,8 @@ const Blog: React.FC<BlogPostProps> = ({ blog, handleCreateComment }) => {
           }}
         >
           <strong>{comment.username}</strong> (
-          {new Date(comment.timestamp).toLocaleString()}): {comment.text}
+          {new Date(comment.timestamp).toLocaleString()}):{' '}
+          {commentTexts[comment.id] || 'Loading...'}
           {comment.imageUrl && (
             <img
               src={comment.imageUrl}

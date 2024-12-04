@@ -25,18 +25,39 @@ const DiverBlog = () => {
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const blogsPerPage = 4;
   const authInfo = useContext(AuthContext);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchTotalPages = async () => {
+      try {
+        const response =
+          await apiTerminal.FetchNumberOfApprovedDiverBlogs(navigate);
+        const totalBlogs = response.data;
+        setTotalPages(Math.ceil(totalBlogs / blogsPerPage));
+      } catch (error) {
+        console.error('Failed to fetch total pages:', error);
+      }
+    };
+
+    fetchTotalPages();
+  }, []);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       setLoading(true);
       setError(null);
       try {
-        const response =
-          await apiTerminal.fetchApprovedDiverBlogsComments(navigate);
+        const response = await apiTerminal.fetchApprovedDiverBlogsComments(
+          blogsPerPage,
+          currentPage,
+          navigate
+        );
 
-        const transformedBlogs = response.map((blog: any) => ({
+        const transformedBlogs = response.data.map((blog: any) => ({
           id: blog.blogId,
           username: blog.applicationUserName,
           text: blog.mediaTextUrl,
@@ -61,7 +82,7 @@ const DiverBlog = () => {
     };
 
     fetchBlogs();
-  }, [authInfo.authInfo.token]);
+  }, [authInfo.authInfo.token, currentPage]);
 
   const handleCreateBlog = async (blogText: string, blogImage: File | null) => {
     try {
@@ -96,12 +117,18 @@ const DiverBlog = () => {
       alert('An error occurred while creating the Comment. Please try again.');
     }
   };
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
   return (
     <div>
       <BlogDefaultDisplay
         blogPostsData={blogs}
         handleCreateBlog={handleCreateBlog}
         handleCreateComment={handleCreateComment}
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
       />
     </div>
   );

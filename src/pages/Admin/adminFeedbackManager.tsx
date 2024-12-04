@@ -31,7 +31,7 @@ const AdminFeedbackManager: React.FC = () => {
         authInfo.authInfo.token,
         navigate
       );
-      const transformedFeedbacks: FeedbackData[] = response.feedbacks.map(
+      const transformedFeedbacks: FeedbackData[] = response.data.feedbacks.map(
         (feedback: any) => ({
           id: feedback.id,
           username: feedback.username,

@@ -59,6 +59,11 @@ const apiTerminal = {
       const formData = new FormData();
       formData.append('Text', text);
       formData.append('Image', image);
+      console.log('FormData content:');
+      formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+      });
+
       const response = await postFormData(
         '/api/DiverBlog/CreateNewBlog',
         formData,
@@ -108,10 +113,14 @@ const apiTerminal = {
     }
   },
   async fetchApprovedDiverBlogsComments(
+    blogsPerPage: number,
+    currentPage: number,
     navigate: (path: string, state?: any) => void
-  ) {
+  ): Promise<any> {
     try {
-      const response = fetch('/api/DiverBlog/FetchAllApprovedComments');
+      const response = await fetch(
+        `/api/DiverBlog/FetchAllApprovedComments?blogsPerPage=${blogsPerPage}&pageNumber=${currentPage}`
+      );
       return response;
     } catch (e: any) {
       if (e?.response?.status === 500) {
@@ -121,7 +130,7 @@ const apiTerminal = {
           },
         });
       }
-      console.log(e);
+      console.error('Error fetching Diver blogs:', e);
       throw e;
     }
   },
@@ -135,7 +144,6 @@ const apiTerminal = {
       const formData = new FormData();
       formData.append('Text', text);
       formData.append('Image', image);
-      console.log(formData);
       const response = await postFormData(
         '/api/WeightlifterBlog/CreateNewBlog',
         formData,
@@ -185,10 +193,14 @@ const apiTerminal = {
     }
   },
   async fetchApprovedWeightlifterBlogsComments(
+    blogsPerPage: number,
+    currentPage: number,
     navigate: (path: string, state?: any) => void
   ) {
     try {
-      const response = fetch('/api/WeightlifterBlog/FetchAllApprovedComments');
+      const response = await fetch(
+        `/api/WeightlifterBlog/FetchAllApprovedComments?blogsPerPage=${blogsPerPage}&pageNumber=${currentPage}`
+      );
       return response;
     } catch (e: any) {
       if (e?.response?.status === 500) {
@@ -198,7 +210,7 @@ const apiTerminal = {
           },
         });
       }
-      console.log(e);
+      console.error('Error fetching blogs:', e);
       throw e;
     }
   },
@@ -251,7 +263,7 @@ const apiTerminal = {
   },
   async fetchAllLocations(navigate: (path: string, state?: any) => void) {
     try {
-      const response = fetch('/api/Utility/fetchAllLocations');
+      const response = fetch('/api/Utility/GetAllLocations');
       return response;
     } catch (e: any) {
       if (e?.response?.status === 500) {
@@ -267,7 +279,7 @@ const apiTerminal = {
   },
   async fetchAllUnits(navigate: (path: string, state?: any) => void) {
     try {
-      const response = fetch('/api/Utility/fetchAllUnits');
+      const response = fetch('/api/Utility/GetAllUnits');
       return response;
     } catch (e: any) {
       if (e?.response?.status === 500) {
@@ -616,6 +628,46 @@ const apiTerminal = {
         '/api/Weightlifter/UpdateTrainingLogPublicity',
         { Name, IsPublic },
         authorization
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.log(e);
+      throw e;
+    }
+  },
+  async FetchNumberOfApprovedDiverBlogs(
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        '/api/DiverBlog/FetchNumberOfApprovedDiverBlogs'
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.log(e);
+      throw e;
+    }
+  },
+  async FetchNumberOfApprovedWeightlifterBlogs(
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        '/api/WeightlifterBlog/FetchNumberOfApprovedWeightlifterBlogs'
       );
       return response;
     } catch (e: any) {
