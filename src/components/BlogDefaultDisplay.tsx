@@ -33,6 +33,7 @@ interface BlogDefaultDisplayProps {
   totalPages: number;
   currentPage: number;
   onPageChange: (page: number) => void;
+  handleSearchSuggestionClick: (suggestionName: string) => void;
 }
 
 const BlogDefaultDisplay: React.FC<BlogDefaultDisplayProps> = ({
@@ -42,13 +43,14 @@ const BlogDefaultDisplay: React.FC<BlogDefaultDisplayProps> = ({
   totalPages,
   currentPage,
   onPageChange,
+  handleSearchSuggestionClick,
 }) => {
   const authInfo = React.useContext(AuthContext);
   const showCreateBlogForm = authInfo.authInfo.username !== '';
 
   return (
     <div>
-      <SearchBar />
+      <SearchBar handleSuggestionClick={handleSearchSuggestionClick} />
       {showCreateBlogForm && <CreateBlog onSubmit={handleCreateBlog} />}
       {blogPostsData.map(blog => (
         <Blog

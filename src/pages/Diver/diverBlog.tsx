@@ -27,7 +27,7 @@ const DiverBlog = () => {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 4;
+  const blogsPerPage = Number(process.env.REACT_APP_BLOGS_PER_PAGE) || 4;
   const authInfo = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -120,6 +120,18 @@ const DiverBlog = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleSearchSuggestionClick = async (suggestionName: string) => {
+    try {
+      navigate(`/diver/other-profile/${suggestionName}`, {
+        state: { targetUsername: suggestionName },
+      });
+    } catch (error) {
+      console.error('Failed to navigate to DiverOtherProfileOverview:', error);
+      alert(
+        'An error occurred while navigating to the profile. Please try again.'
+      );
+    }
+  };
   return (
     <div>
       <BlogDefaultDisplay
@@ -129,6 +141,7 @@ const DiverBlog = () => {
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={handlePageChange}
+        handleSearchSuggestionClick={handleSearchSuggestionClick}
       />
     </div>
   );

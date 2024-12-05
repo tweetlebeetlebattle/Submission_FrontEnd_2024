@@ -27,7 +27,7 @@ const WeightlifterBlog = () => {
   const [error, setError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
-  const blogsPerPage = 4;
+  const blogsPerPage = Number(process.env.REACT_APP_BLOGS_PER_PAGE) || 4;
   const authInfo = useContext(AuthContext);
   const navigate = useNavigate();
 

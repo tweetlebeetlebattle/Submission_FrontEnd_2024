@@ -1,12 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import apiTerminal from '../client/apiTerminal';
 
-const SearchBar = () => {
+interface SearchBarProps {
+  handleSuggestionClick: (suggestionName: string) => void;
+}
+
+const SearchBar = ({ handleSuggestionClick }: SearchBarProps) => {
   const [query, setQuery] = useState<string | null>(null);
   const [areSuggestionsVisible, setAreSuggestionsVisible] = useState(false);
   const [suggestions, setSuggestions] = useState<string[] | null>(null);
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null);
+  const navigate = useNavigate();
 
   const handleQueryChange = (input: string) => {
+    const trimmedInput = input.trim();
+
+    if (!trimmedInput) {
+      setQuery(null);
+      setSuggestions([]);
+      setAreSuggestionsVisible(false);
+      return;
+    }
+
     setQuery(input);
     setAreSuggestionsVisible(true);
     if (debounceTimeout.current) {
@@ -14,26 +30,17 @@ const SearchBar = () => {
     }
     debounceTimeout.current = setTimeout(() => {
       handleSearch(input);
-    }, 500); // Debounce time is 500 ms
+    }, 500);
   };
 
-  const handleSearch = (query: string) => {
-    console.log(query);
-    // Logging the query for debugging
-    // Here I set suggestions to backend response
-    // Simulating fetching data
-    setSuggestions(
-      ['Suggestion 1', 'Suggestion 2', 'Suggestion 3'].filter(item =>
-        item.toLowerCase().includes(query.toLowerCase())
-      )
+  const handleSearch = async (query: string) => {
+    const resposne = await apiTerminal.FetchSearchSuggestions(
+      query.trim(),
+      navigate
     );
-  };
 
-  const handleSuggestionClick = (suggestionName: string) => {
-    console.log(`Redirect to page with: ${suggestionName}`);
-    // Here you can add redirection logic or other functionality
+    setSuggestions(resposne.data);
   };
-
   useEffect(() => {
     return () => {
       if (debounceTimeout.current) {

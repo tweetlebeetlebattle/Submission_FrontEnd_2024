@@ -682,6 +682,115 @@ const apiTerminal = {
       throw e;
     }
   },
+  async FetchSearchSuggestions(
+    queryTarget: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/Utility/FetchSearchSuggestions?searchQuery.SearchQuery=${encodeURIComponent(queryTarget)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.log(e);
+      throw e;
+    }
+  },
+  async FetchNumberOfApprovedUserDiverBlogs(
+    queryTarget: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/DiverBlog/FetchNumberOfApprovedUserDiverBlogs?searchQuery.SearchQuery=${encodeURIComponent(queryTarget)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.log(e);
+      throw e;
+    }
+  },
+  async FetchNumberOfApprovedUserWeightlifterBlogs(
+    queryTarget: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/WeightlifterBlog/FetchNumberOfApprovedUserWeightlifterBlogs?searchQuery.SearchQuery=${encodeURIComponent(queryTarget)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.log(e);
+      throw e;
+    }
+  },
+  async fetchApprovedUserDiverBlogsComments(
+    blogsPerPage: number,
+    currentPage: number,
+    username: string,
+    navigate: (path: string, state?: any) => void
+  ): Promise<any> {
+    try {
+      const response = await fetch(
+        `/api/DiverBlog/FetchApprovedUserDiverBlogs?blogsPerPage=${blogsPerPage}&pageNumber=${currentPage}&username=${encodeURIComponent(username)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.error('Error fetching Diver blogs:', e);
+      throw e;
+    }
+  },
+  async FetchApprovedUserWeightlifterBlogs(
+    blogsPerPage: number,
+    currentPage: number,
+    username: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/WeightlifterBlog/FetchApprovedUserWeightlifterBlogs?blogsPerPage=${blogsPerPage}&pageNumber=${currentPage}&username=${encodeURIComponent(username)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.error('Error fetching blogs:', e);
+      throw e;
+    }
+  },
 };
 
 export default apiTerminal;
