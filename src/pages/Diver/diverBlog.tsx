@@ -122,7 +122,7 @@ const DiverBlog = () => {
   };
   const handleSearchSuggestionClick = async (suggestionName: string) => {
     try {
-      navigate(`/diver/other-profile/${suggestionName}`, {
+      navigate(`/diver-other-profile-overview/${suggestionName}`, {
         state: { targetUsername: suggestionName },
       });
     } catch (error) {

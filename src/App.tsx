@@ -28,6 +28,28 @@ import NavigationBar from './components/NavigationBar';
 import { AuthProvider } from './store/authContext';
 import BadRequest from './pages/badRequest';
 import NotFound from './pages/notFount';
+import DiverOtherProfileOverview from './pages/Diver/diverOtherProfileOverview';
+import { useParams } from 'react-router-dom';
+import WeightlifterOtherProfileOverview from './pages/Weightlifter/weightlifterOtherProfileOverview';
+
+const DiverOtherProfileOverviewWrapper = () => {
+  const { username } = useParams<{ username: string }>();
+
+  if (!username) {
+    return <NotFound />;
+  }
+
+  return <DiverOtherProfileOverview targetUsername={username} />;
+};
+const WeightlifterOtherProfileOverviewWrapper = () => {
+  const { username } = useParams<{ username: string }>();
+
+  if (!username) {
+    return <NotFound />;
+  }
+
+  return <WeightlifterOtherProfileOverview targetUsername={username} />;
+};
 
 function AppContent() {
   const location = useLocation();
@@ -80,6 +102,14 @@ function AppContent() {
           element={<WeightlifterOverview />}
         />
         <Route path='/onboarding' element={<Onboarding />} />
+        <Route
+          path='/diver-other-profile-overview/:username'
+          element={<DiverOtherProfileOverviewWrapper />}
+        />{' '}
+        <Route
+          path='/weightlifter-other-profile-overview/:username'
+          element={<WeightlifterOtherProfileOverviewWrapper />}
+        />{' '}
         <Route path='/overview' element={<Overview />} />
         <Route path='/500' element={<BadRequest />} />
         <Route path='*' element={<NotFound />} />

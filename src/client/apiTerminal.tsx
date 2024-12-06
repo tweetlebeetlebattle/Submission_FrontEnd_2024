@@ -449,13 +449,11 @@ const apiTerminal = {
   },
   async fetchPublicUserData(
     username: string,
-    authorization: string,
     navigate: (path: string, state?: any) => void
   ) {
     try {
       const response = await fetch(
-        `/api/Weightlifter/FetchPublicUserData?Username=${encodeURIComponent(username)}`,
-        authorization
+        `/api/Weightlifter/FetchPublicUserData?Username=${encodeURIComponent(username)}`
       );
       return response;
     } catch (e: any) {
@@ -709,7 +707,7 @@ const apiTerminal = {
   ) {
     try {
       const response = await fetch(
-        `/api/DiverBlog/FetchNumberOfApprovedUserDiverBlogs?searchQuery.SearchQuery=${encodeURIComponent(queryTarget)}`
+        `/api/DiverBlog/FetchNumberOfApprovedUserDiverBlogs?SearchQuery=${encodeURIComponent(queryTarget)}`
       );
       return response;
     } catch (e: any) {
@@ -755,6 +753,7 @@ const apiTerminal = {
       const response = await fetch(
         `/api/DiverBlog/FetchApprovedUserDiverBlogs?blogsPerPage=${blogsPerPage}&pageNumber=${currentPage}&username=${encodeURIComponent(username)}`
       );
+
       return response;
     } catch (e: any) {
       if (e?.response?.status === 500) {

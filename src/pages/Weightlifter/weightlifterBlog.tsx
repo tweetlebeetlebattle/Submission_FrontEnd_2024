@@ -58,14 +58,14 @@ const WeightlifterBlog = () => {
             navigate
           );
 
-        const transformedBlogs = response.map((blog: any) => ({
+        const transformedBlogs = response.data.map((blog: any) => ({
           id: blog.blogId,
           username: blog.applicationUserName,
           text: blog.mediaTextUrl,
           timestamp: blog.time,
           imageUrl: blog.mediaPictureUrl,
           comments: blog.comments.map((comment: any) => ({
-            id: comment.id,
+            id: comment.commentId,
             text: comment.mediaTextUrl,
             username: comment.applicationUserName,
             timestamp: comment.time,
@@ -83,7 +83,7 @@ const WeightlifterBlog = () => {
     };
 
     fetchBlogs();
-  }, [authInfo.authInfo.token]);
+  }, [authInfo.authInfo.token, currentPage]);
 
   const handleCreateBlog = async (blogText: string, blogImage: File | null) => {
     try {
@@ -121,6 +121,18 @@ const WeightlifterBlog = () => {
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+  const handleSearchSuggestionClick = async (suggestionName: string) => {
+    try {
+      navigate(`/weightlifter-other-profile-overview/${suggestionName}`, {
+        state: { targetUsername: suggestionName },
+      });
+    } catch (error) {
+      console.error('Failed to navigate to DiverOtherProfileOverview:', error);
+      alert(
+        'An error occurred while navigating to the profile. Please try again.'
+      );
+    }
+  };
   return (
     <div>
       <BlogDefaultDisplay
@@ -130,6 +142,7 @@ const WeightlifterBlog = () => {
         totalPages={totalPages}
         currentPage={currentPage}
         onPageChange={handlePageChange}
+        handleSearchSuggestionClick={handleSearchSuggestionClick}
       />
     </div>
   );

@@ -3,13 +3,13 @@ import apiTerminal from '../../client/apiTerminal';
 import OtherProfileOverview from '../../components/OtherProfileOverview';
 import ProfileHeader from '../../components/ProfileHeader';
 
-type DiverOtherProfileOverviewProps = {
+type WeightlifterOtherProfileOverviewProps = {
   targetUsername: string;
 };
 
-const DiverOtherProfileOverview: React.FC<DiverOtherProfileOverviewProps> = ({
-  targetUsername,
-}) => {
+const WeightlifterOtherProfileOverview: React.FC<
+  WeightlifterOtherProfileOverviewProps
+> = ({ targetUsername }) => {
   const fetchBlogMethod = async (
     blogsPerPage: number,
     currentPage: number,
@@ -50,4 +50,4 @@ const DiverOtherProfileOverview: React.FC<DiverOtherProfileOverviewProps> = ({
   );
 };
 
-export default DiverOtherProfileOverview;
+export default WeightlifterOtherProfileOverview;

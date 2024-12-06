@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import Pagination from './Pagination';
+import OtherDisplayBlog from './OtherDisplayBlog';
 import { useNavigate } from 'react-router-dom';
 
 interface Comment {
@@ -56,25 +57,25 @@ const OtherProfileOverview: React.FC<OtherProfileOverviewProps> = ({
     };
 
     fetchTotalPages();
-  }, []);
+  }, [targetUsername, fetchPageNumberMethod, navigate, blogsPerPage]);
 
   useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const resposne = await fetchMethod(
+        const response = await fetchMethod(
           blogsPerPage,
           currentPage,
           targetUsername,
           navigate
         );
-        const transformedBlogs = resposne.data.map((blog: any) => ({
+        const transformedBlogs = response.data.map((blog: any) => ({
           id: blog.blogId,
           username: blog.applicationUserName,
           text: blog.mediaTextUrl,
           timestamp: blog.time,
           imageUrl: blog.mediaPictureUrl,
           comments: blog.comments.map((comment: any) => ({
-            id: comment.id,
+            id: comment.commentId,
             text: comment.mediaTextUrl,
             username: comment.applicationUserName,
             timestamp: comment.time,
@@ -84,21 +85,28 @@ const OtherProfileOverview: React.FC<OtherProfileOverviewProps> = ({
 
         setBlogs(transformedBlogs);
       } catch (error) {
-        console.error(error);
+        console.error('Failed to fetch blogs:', error);
       }
     };
 
     fetchBlogs();
-  }, [currentPage]);
+  }, [currentPage, fetchMethod, blogsPerPage, targetUsername, navigate]);
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
+
   return (
-    <Pagination
-      totalPages={totalPages}
-      currentPage={currentPage}
-      onPageChange={handlePageChange}
-    />
+    <div>
+      {blogs.map(blog => (
+        <OtherDisplayBlog key={blog.id} blog={blog} />
+      ))}
+      <Pagination
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+      />
+    </div>
   );
 };
 
