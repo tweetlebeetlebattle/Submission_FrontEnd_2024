@@ -2,6 +2,7 @@ import React from 'react';
 import apiTerminal from '../../client/apiTerminal';
 import OtherProfileOverview from '../../components/OtherProfileOverview';
 import ProfileHeader from '../../components/ProfileHeader';
+import OtherDisplayWeightlifter from '../../components/OtherDisplayWeightlifter';
 
 type WeightlifterOtherProfileOverviewProps = {
   targetUsername: string;
@@ -40,7 +41,7 @@ const WeightlifterOtherProfileOverview: React.FC<
         username={targetUsername}
         description={`Explore blogs and comments by ${targetUsername}.`}
       />
-
+      <OtherDisplayWeightlifter username={targetUsername} />
       <OtherProfileOverview
         targetUsername={targetUsername}
         fetchMethod={fetchBlogMethod}
