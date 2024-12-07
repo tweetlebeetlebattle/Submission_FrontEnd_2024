@@ -790,6 +790,62 @@ const apiTerminal = {
       throw e;
     }
   },
+  async FetchHistoricSeaDataByLocationHTML(
+    location: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/Diver/FetchHistoricSeaDataByLocationHTML?location=${encodeURIComponent(location)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.error('Error fetching blogs:', e);
+      throw e;
+    }
+  },
+  async FetchHistoricSeaDataByLocationGif(
+    location: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/Diver/FetchHistoricSeaDataByLocationGif?location=${encodeURIComponent(location)}`
+      );
+      return response;
+    } catch (e: any) {
+      console.error('Error fetching GIF data:', e);
+      throw e;
+    }
+  },
+  async FetchHistoricSeaDataByLocationStorm(
+    location: string,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/Diver/FetchHistoricSeaDataByLocationStorm?location=${encodeURIComponent(location)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.error('Error fetching blogs:', e);
+      throw e;
+    }
+  },
 };
 
 export default apiTerminal;
