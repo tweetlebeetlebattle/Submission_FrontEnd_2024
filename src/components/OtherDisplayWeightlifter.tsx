@@ -31,7 +31,7 @@ interface PackagedReading {
 }
 
 interface ApiResponse {
-  result: {
+  data: {
     packagedReadings: PackagedReading[];
   };
 }
@@ -55,7 +55,7 @@ const OtherDisplayWeightlifter: React.FC<OtherDisplayWeightlifterProps> = ({
         username,
         navigate
       );
-      const { packagedReadings } = response.result;
+      const { packagedReadings } = response.data;
 
       const conditionData: RenderData[] = packagedReadings
         .filter((item: PackagedReading) => !item.isTraining)

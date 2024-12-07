@@ -22,7 +22,7 @@ interface RenderData {
 }
 
 interface ApiResponse {
-  result: {
+  data: {
     packagedReadings: {
       name: string;
       isPublic: boolean;
@@ -52,7 +52,7 @@ const WeightlifterConditions: React.FC = () => {
           authInfo.authInfo.token,
           navigate
         );
-      const { packagedReadings } = response.result;
+      const { packagedReadings } = response.data;
 
       const conditionData: RenderData[] = packagedReadings
         .filter(item => !item.isTraining)
