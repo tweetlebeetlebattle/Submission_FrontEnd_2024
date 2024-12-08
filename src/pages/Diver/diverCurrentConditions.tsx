@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ValueBar from '../../components/ValueBar';
 import PageSegmentor from '../../components/PageSegmentor';
 import conditionsShabla from '../../media/images/diver/conditionsShabla.jpg';
@@ -8,47 +8,81 @@ import conditionsEmine from '../../media/images/diver/conditionsEmine.jpg';
 import conditionsBurgas from '../../media/images/diver/conditionsBurgas.jpg';
 import conditionsAhtopol from '../../media/images/diver/conditionsAhtopol.jpg';
 import { DiverConditionsInfo } from '../../types/types';
+import apiTerminal from '../../client/apiTerminal';
+import { useNavigate } from 'react-router-dom';
 
 const DiverCurrentConditions = () => {
   const [conditionsInfo, setConditionsInfo] = useState<
     DiverConditionsInfo[] | null
   >(null);
-  const [selectedValue, setSelectedValue] = useState('Option 1');
+  const [selectedValue, setSelectedValue] = useState('1 ден');
   const options = ['1 ден', '2 дена', '3 дена', '4 дена', '5 дена'];
+  const navigate = useNavigate();
 
-  const handleSubmit = () => {
-    alert(`You have selected: ${selectedValue}`);
-  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const period = parseInt(selectedValue.split(' ')[0], 10);
+        const response = await apiTerminal.FetchIndexSeaDataByPeriod(
+          period,
+          navigate
+        );
+        setConditionsInfo(response.data.dataIndices);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [selectedValue, navigate]);
 
   const sections = [
     {
       title: 'Шабла',
-      description: '',
+      description: String(
+        conditionsInfo?.find(item => item.location === 'Шабла')?.index ||
+          'Loading...'
+      ),
       backgroundImage: conditionsShabla,
     },
     {
       title: 'Калиакра',
-      description: '',
+      description: String(
+        conditionsInfo?.find(item => item.location === 'Калиакра')?.index ||
+          'Loading...'
+      ),
       backgroundImage: conditionsKaliakra,
     },
     {
       title: 'Варна',
-      description: '',
+      description: String(
+        conditionsInfo?.find(item => item.location === 'Варна')?.index ||
+          'Loading...'
+      ),
       backgroundImage: conditionsVarna,
     },
     {
       title: 'Емине',
-      description: '',
+      description: String(
+        conditionsInfo?.find(item => item.location === 'Емине')?.index ||
+          'Loading...'
+      ),
       backgroundImage: conditionsEmine,
     },
     {
       title: 'Бургас',
-      description: '',
+      description: String(
+        conditionsInfo?.find(item => item.location === 'Бургас')?.index ||
+          'Loading...'
+      ),
       backgroundImage: conditionsBurgas,
     },
     {
       title: 'Ахтопол',
-      description: '',
+      description: String(
+        conditionsInfo?.find(item => item.location === 'Ахтопол')?.index ||
+          'Loading...'
+      ),
       backgroundImage: conditionsAhtopol,
     },
   ];

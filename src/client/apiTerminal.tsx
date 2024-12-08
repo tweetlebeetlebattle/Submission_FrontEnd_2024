@@ -846,6 +846,27 @@ const apiTerminal = {
       throw e;
     }
   },
+  async FetchIndexSeaDataByPeriod(
+    period: number,
+    navigate: (path: string, state?: any) => void
+  ) {
+    try {
+      const response = await fetch(
+        `/api/Diver/FetchIndexSeaDataByPeriod?period=${encodeURIComponent(period)}`
+      );
+      return response;
+    } catch (e: any) {
+      if (e?.response?.status === 500) {
+        navigate('/500', {
+          state: {
+            details: e?.response?.data?.Details || 'Unknown error occurred.',
+          },
+        });
+      }
+      console.error('Error fetching indecies:', e);
+      throw e;
+    }
+  },
 };
 
 export default apiTerminal;

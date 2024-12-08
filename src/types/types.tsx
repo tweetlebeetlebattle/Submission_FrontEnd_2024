@@ -5,8 +5,6 @@ export type AuthInfo = {
 };
 
 export type DiverConditionsInfo = {
-  waterTemp: number;
-  waveHeight: number;
-  volatility: number;
-  totalIndex: number;
+  location: string;
+  index: number;
 };
