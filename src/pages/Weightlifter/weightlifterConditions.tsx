@@ -46,6 +46,9 @@ const WeightlifterConditions: React.FC = () => {
   const navigate = useNavigate();
 
   const fetchAllUserData = async (): Promise<void> => {
+    if (authInfo.authInfo.username === '') {
+      navigate('/');
+    }
     try {
       const response: ApiResponse =
         await apiTerminal.fetchAllUserTrainingAndUniversalLogs(
@@ -193,7 +196,6 @@ const WeightlifterConditions: React.FC = () => {
   );
 };
 
-// Styles
 const containerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'row',

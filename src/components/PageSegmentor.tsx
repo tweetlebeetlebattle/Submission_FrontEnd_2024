@@ -24,15 +24,17 @@ const PageSegmentor: React.FC<PageSegmentorProps> = ({ sections }) => {
           }}
           onClick={section.onClick}
         >
-          <h2 style={titleStyle}>{section.title}</h2>
-          <p style={descriptionStyle}>{section.description}</p>
+          <div className='overlay' />
+          <div style={textContainerStyle}>
+            <h2 style={titleStyle}>{section.title}</h2>
+            <p style={descriptionStyle}>{section.description}</p>
+          </div>
         </div>
       ))}
     </div>
   );
 };
 
-// Inline CSS styles
 const containerStyle: React.CSSProperties = {
   display: 'flex',
   height: '100vh',
@@ -41,48 +43,65 @@ const containerStyle: React.CSSProperties = {
 };
 
 const sectionStyle: React.CSSProperties = {
+  position: 'relative',
   flex: 1,
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
-  justifyContent: 'center',
+  justifyContent: 'flex-start',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   textDecoration: 'none',
   cursor: 'pointer',
   transition: 'border-color 0.3s ease, filter 0.3s ease, opacity 0.3s ease',
   border: '5px solid transparent',
+  paddingTop: '70px',
+  overflow: 'hidden',
+};
+
+const textContainerStyle: React.CSSProperties = {
+  position: 'relative',
+  textAlign: 'center',
+  padding: '10px',
+  zIndex: 2,
 };
 
 const titleStyle: React.CSSProperties = {
   color: 'white',
   fontSize: '24px',
-  zIndex: 2,
   textShadow: '2px 2px 4px rgba(0,0,0,0.6)',
+  margin: 0,
 };
 
 const descriptionStyle: React.CSSProperties = {
   color: 'white',
   fontSize: '18px',
-  zIndex: 2,
   textShadow: '1px 1px 2px rgba(0,0,0,0.6)',
+  margin: '10px 0 0',
   padding: '0 20px',
 };
 
-// Adding the styles to the document head for hover effects
 document.head.appendChild(
   (() => {
     const style = document.createElement('style');
     style.type = 'text/css';
     style.innerHTML = `
-        .section:hover {
-            border-color: rgba(255,255,255,0.5);
-            filter: brightness(0.7);
-            opacity: 0.9;
-        }
-        .section:active {
-            opacity: 0.85;
-        }
+      .section {
+        position: relative;
+      }
+      .section .overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0); /* No darkening initially */
+        transition: background-color 0.3s ease;
+        z-index: 1; /* Places overlay below the text */
+      }
+      .section:hover .overlay {
+        background-color: rgba(0, 0, 0, 0.4); /* Darkens on hover */
+      }
     `;
     return style;
   })()

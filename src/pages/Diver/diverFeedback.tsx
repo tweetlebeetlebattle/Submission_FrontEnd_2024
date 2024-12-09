@@ -3,6 +3,7 @@ import apiTerminal from '../../client/apiTerminal';
 import ValueBar from '../../components/ValueBar';
 import { AuthContext } from '../../store/authContext';
 import { useNavigate } from 'react-router-dom';
+import { valueBarLocation } from '../../media/text/text';
 
 interface LocationState {
   latitude: number | null;
@@ -29,6 +30,9 @@ const DiverFeedback = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (authInfo.authInfo.username === '') {
+      navigate('/');
+    }
     const fetchOptions = async () => {
       try {
         const response = await apiTerminal.fetchAllLocations(navigate);
@@ -118,6 +122,7 @@ const DiverFeedback = () => {
           options={locationOptions}
           selectedValue={selectedLocation}
           setSelectedValue={setSelectedLocation}
+          text={valueBarLocation}
         />
 
         <textarea

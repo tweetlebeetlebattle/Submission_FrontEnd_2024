@@ -43,6 +43,9 @@ const AdminServerManager: React.FC = () => {
   };
 
   useEffect(() => {
+    if (authInfo.authInfo.isAdmin === false) {
+      navigate('/');
+    }
     fetchServerData();
   }, [refresh]);
 

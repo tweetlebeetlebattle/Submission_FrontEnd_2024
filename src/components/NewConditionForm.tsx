@@ -64,7 +64,6 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
     >
       <h3>Create a New Condition</h3>
 
-      {/* Title Input */}
       <div style={{ marginBottom: '10px', width: '100%' }}>
         <label>
           Condition Title:
@@ -77,7 +76,6 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
         </label>
       </div>
 
-      {/* DateTime Input */}
       <div style={{ marginBottom: '10px', width: '100%' }}>
         <label>
           Select Date & Time:
@@ -90,7 +88,6 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
         </label>
       </div>
 
-      {/* Measurement Unit Input */}
       <div style={{ marginBottom: '10px', width: '100%' }}>
         <label>
           Measurement Unit:
@@ -104,7 +101,6 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
         </label>
       </div>
 
-      {/* Measurement Input */}
       <div style={{ marginBottom: '10px', width: '100%' }}>
         <label>
           Measurement:
@@ -118,12 +114,10 @@ const NewConditionForm: React.FC<NewConditionFormProps> = ({
         </label>
       </div>
 
-      {/* Submit Button */}
       <button onClick={handleCreateCondition} style={{ marginTop: '10px' }}>
         Add Condition
       </button>
 
-      {/* Confirmation Modal */}
       <BasicModal
         title='Confirm New Condition'
         buttonLabel='Confirm'

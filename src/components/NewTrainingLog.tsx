@@ -59,7 +59,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
   const handleAddSets = () => {
     const setsCount = parseInt(targetSets, 10);
 
-    // Reset the set objects with new sets count
     if (!isNaN(setsCount) && setsCount > 0) {
       const newSets: SetObject[] = Array.from(
         { length: setsCount },
@@ -110,7 +109,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
 
       console.log('Training log created successfully:', response);
 
-      // Reset form
       setTitle('');
       setNewTitle('');
       setTargetWeight('');
@@ -136,7 +134,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             handleSubmit();
           }}
         >
-          {/* Title Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Title:</label>
             <select
@@ -163,7 +160,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             )}
           </div>
 
-          {/* Date Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Date:</label>
             <input
@@ -174,7 +170,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             />
           </div>
 
-          {/* Target Weight Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Target Weight:</label>
             <input
@@ -185,7 +180,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             />
           </div>
 
-          {/* Unit Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Unit:</label>
             <select
@@ -212,7 +206,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             )}
           </div>
 
-          {/* Target Sets and Reps */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Target Sets:</label>
             <input
@@ -232,7 +225,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             />
           </div>
 
-          {/* Dynamic Set Inputs */}
           {setObjects.map((set, index) => (
             <div key={index} style={styles.setContainer}>
               <h4>Set {set.doneSetCount}</h4>

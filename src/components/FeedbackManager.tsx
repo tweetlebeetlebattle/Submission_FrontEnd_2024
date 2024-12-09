@@ -52,7 +52,7 @@ const FeedbackManager: React.FC<FeedbackManagerProps> = ({
     try {
       await apiTerminal.deleteFeedback(id, authInfo.authInfo.token, navigate);
       console.log('Deleted feedback with ID:', id);
-      onDelete(); // Notify parent about the deletion
+      onDelete();
     } catch (error) {
       console.error('Error deleting feedback:', error);
     }

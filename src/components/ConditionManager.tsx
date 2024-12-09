@@ -27,14 +27,14 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
       alert('Input value cannot be empty');
       return;
     }
-    setIsModalOpen(true); // Open the confirmation modal
+    setIsModalOpen(true);
   };
 
   const handleConfirmSubmit = () => {
     console.log('DateTime:', dateTime);
     console.log('Input Value:', inputValue);
     alert(`Submitted!\nDateTime: ${dateTime}\nInput Value: ${inputValue}`);
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false);
   };
 
   return (
@@ -51,7 +51,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
     >
       <h3>{title}</h3>
 
-      {/* Toggle Switches */}
       <div
         style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}
       >
@@ -73,7 +72,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
         </label>
       </div>
 
-      {/* DateTime Input */}
       <div style={{ marginBottom: '10px' }}>
         <label>
           Select Date & Time:
@@ -86,7 +84,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
         </label>
       </div>
 
-      {/* Input Field */}
       <div style={{ marginBottom: '10px' }}>
         <label>
           Enter Value:
@@ -99,10 +96,8 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
         </label>
       </div>
 
-      {/* Submit Button */}
       <button onClick={handleSubmit}>Submit</button>
 
-      {/* Confirmation Modal */}
       <BasicModal
         title='Confirm Submission'
         buttonLabel='Confirm'

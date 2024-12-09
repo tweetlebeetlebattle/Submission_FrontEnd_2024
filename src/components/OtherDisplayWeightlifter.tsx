@@ -155,7 +155,6 @@ const OtherDisplayWeightlifter: React.FC<OtherDisplayWeightlifterProps> = ({
   );
 };
 
-// Styles
 const containerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'row',

@@ -18,18 +18,16 @@ interface GraphManagerProps {
 }
 
 const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
-  // Generate random colors for each dataset
   const colors = datasets.map(
     () => '#' + Math.floor(Math.random() * 16777215).toString(16)
   );
 
-  // Prepare chart data
   const chartData = {
     datasets: datasets.map((dataset, index) => ({
       label: dataset.title,
       data: dataset.data.map(item => ({
         x: item.date,
-        y: parseFloat(item.measurement), // Ensure numerical values
+        y: parseFloat(item.measurement),
       })),
       borderColor: colors[index],
       backgroundColor: colors[index],
@@ -38,7 +36,6 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
     })),
   };
 
-  // Chart options
   const options: ChartOptions<'line'> = {
     scales: {
       x: {
@@ -61,7 +58,7 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
     },
     plugins: {
       legend: {
-        display: true, // Enable legend for better understanding
+        display: true,
       },
     },
     maintainAspectRatio: false,
@@ -69,10 +66,8 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
 
   return (
     <div style={containerStyle}>
-      {/* Line Chart */}
       <Line data={chartData} options={options} height={400} />
 
-      {/* Legend below the chart */}
       <div style={legendContainerStyle}>
         {datasets.map((dataset, index) => (
           <div key={index} style={legendItemStyle}>
@@ -96,7 +91,6 @@ const GraphManager: React.FC<GraphManagerProps> = ({ datasets }) => {
   );
 };
 
-// Styles
 const containerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',

@@ -10,6 +10,10 @@ import conditionsAhtopol from '../../media/images/diver/conditionsAhtopol.jpg';
 import { DiverConditionsInfo } from '../../types/types';
 import apiTerminal from '../../client/apiTerminal';
 import { useNavigate } from 'react-router-dom';
+import {
+  valueBarTimeframe,
+  currentConditionsExplanation,
+} from '../../media/text/text';
 
 const DiverCurrentConditions = () => {
   const [conditionsInfo, setConditionsInfo] = useState<
@@ -89,12 +93,24 @@ const DiverCurrentConditions = () => {
 
   return (
     <>
-      <div>
+      <div style={{ marginBottom: '20px' }}>
         <ValueBar
           options={options}
           selectedValue={selectedValue}
           setSelectedValue={setSelectedValue}
+          text={valueBarTimeframe}
         />
+      </div>
+      <div
+        style={{
+          textAlign: 'center',
+          margin: '20px 0',
+          fontSize: '18px',
+          fontWeight: 'bold',
+          color: '#333',
+        }}
+      >
+        <p>{currentConditionsExplanation}</p>
       </div>
       <div>
         <PageSegmentor sections={sections} />

@@ -22,6 +22,9 @@ const AdminBlogManager = () => {
 
   useEffect(() => {
     const fetchUnapprovedBlogs = async () => {
+      if (authInfo.authInfo.isAdmin === false) {
+        navigate('/');
+      }
       setLoading(true);
       setError(null);
       try {

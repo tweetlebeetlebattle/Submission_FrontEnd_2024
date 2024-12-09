@@ -6,8 +6,11 @@ import {
 } from '../../media/text/text';
 import overviewBlog from '../../media/images/weightlifter/overviewBlog.webp';
 import overviewCurrent from '../../media/images/weightlifter/overviewCurrent.webp';
+import { useContext } from 'react';
+import { AuthContext } from '../../store/authContext';
 
 const WeightlifterOverview = () => {
+  const authInfo = useContext(AuthContext);
   const navigate = useNavigate();
 
   const onClickBlog = () => {
@@ -23,14 +26,15 @@ const WeightlifterOverview = () => {
       onClick: onClickBlog,
       backgroundImage: overviewBlog,
     },
-    {
+  ];
+  if (authInfo.authInfo.username !== '') {
+    sections.push({
       title: 'Current Conditions',
       description: weightlifterCurrentConditionsDescription,
       onClick: onClickCurrentConditions,
       backgroundImage: overviewCurrent,
-    },
-  ];
-
+    });
+  }
   return (
     <>
       <div>

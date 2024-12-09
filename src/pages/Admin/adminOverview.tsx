@@ -8,9 +8,12 @@ import {
 import overviewBlog from '../../media/images/admin/overviewBlog.webp';
 import overviewFeedback from '../../media/images/admin/overviewFeedback.webp';
 import overviewServer from '../../media/images/admin/overviewServer.webp';
+import { useContext, useEffect } from 'react';
+import { AuthContext } from '../../store/authContext';
 
 const AdminOverview = () => {
   const navigate = useNavigate();
+  const authInfo = useContext(AuthContext);
 
   const onClickBlog = () => {
     navigate('/admin-blog-manager');
@@ -21,6 +24,11 @@ const AdminOverview = () => {
   const onClickServer = () => {
     navigate('/admin-server-manager');
   };
+  useEffect(() => {
+    if (authInfo.authInfo.isAdmin === false) {
+      navigate('/');
+    }
+  }, []);
 
   const sections = [
     {

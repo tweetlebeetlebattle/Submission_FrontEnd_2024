@@ -32,7 +32,6 @@ const NotFound: React.FC = () => {
   );
 };
 
-// Inline styles with proper type annotations
 const containerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',

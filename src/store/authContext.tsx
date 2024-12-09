@@ -16,7 +16,6 @@ interface AuthContextValue {
   removeInfo: () => void;
 }
 
-// Initial values for the context
 const initialValue: AuthContextValue = {
   authInfo: {
     username: '',
@@ -27,10 +26,8 @@ const initialValue: AuthContextValue = {
   removeInfo: () => void 0,
 };
 
-// Create the AuthContext
 export const AuthContext = createContext<AuthContextValue>(initialValue);
 
-// AuthProvider component
 export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   const [authInfo, setAuthInfo] = useState<AuthInfo>(initialValue.authInfo);
 
@@ -79,5 +76,4 @@ export const AuthProvider: React.FC<PropsWithChildren<{}>> = ({ children }) => {
   );
 };
 
-// Custom hook to use AuthContext
 export const useAuth = () => useContext(AuthContext);

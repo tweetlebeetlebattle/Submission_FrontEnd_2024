@@ -55,6 +55,9 @@ const AdminFeedbackManager: React.FC = () => {
   };
 
   useEffect(() => {
+    if (authInfo.authInfo.isAdmin === false) {
+      navigate('/');
+    }
     fetchFeedbackData();
   }, [refresh]);
 

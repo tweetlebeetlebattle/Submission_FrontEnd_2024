@@ -7,6 +7,7 @@ import ValueBar from '../../components/ValueBar';
 import HistoricDataManager from '../../components/HistoricDataManager';
 import apiTerminal from '../../client/apiTerminal';
 import { useNavigate } from 'react-router-dom';
+import { valueBarLocation, valueBarDataSource } from '../../media/text/text';
 
 interface Reading {
   waveData?: { waveAvg: number; waveUnit: string };
@@ -87,7 +88,7 @@ const DiverHistoricConditions = () => {
   };
 
   const chartData: ChartData<'line', number[], string> = {
-    labels: backendData.map(reading => reading.dateTime || ''), // Consistent labels
+    labels: backendData.map(reading => reading.dateTime || ''),
     datasets: visibleData.flatMap(dataType => {
       const dataMap: { [key: string]: keyof Reading } = {
         Wave: 'waveData',
@@ -175,11 +176,13 @@ const DiverHistoricConditions = () => {
           options={locationOptions}
           selectedValue={selectedLocation}
           setSelectedValue={setSelectedLocation}
+          text={valueBarLocation}
         />
         <ValueBar
           options={dataSourceOptions}
           selectedValue={selectedDataSource}
           setSelectedValue={setSelectedDataSource}
+          text={valueBarDataSource}
         />
       </div>
       <HistoricDataManager

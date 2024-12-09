@@ -2,6 +2,7 @@ import React from 'react';
 
 interface DropdownProps {
   options: string[];
+  text: string;
   selectedValue: string;
   setSelectedValue: (value: string) => void;
 }
@@ -10,9 +11,12 @@ const ValueBar: React.FC<DropdownProps> = ({
   options,
   selectedValue,
   setSelectedValue,
+  text,
 }) => {
   return (
     <div style={containerStyle}>
+      <label style={{ marginBottom: '5px' }}>{text}</label>
+
       <select
         value={selectedValue}
         onChange={e => setSelectedValue(e.target.value)}

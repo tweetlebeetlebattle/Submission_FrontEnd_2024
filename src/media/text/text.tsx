@@ -21,3 +21,9 @@ export const adminFeedbackDescription =
   'Review prediction model user feedback.';
 export const adminServerDescription =
   'Review the state of the data gathering server.';
+
+export const valueBarLocation = 'Select location:';
+export const valueBarDataSource = 'Select data source:';
+export const valueBarTimeframe = 'Select timeframe for the prediction:';
+export const currentConditionsExplanation =
+  'Discover the current diving conditions across various locations. Select a timeframe to view the most accurate data! Best diving conditions are indexed between 0 and 1.5. Expect muddy waters above that. Anything above 2.5 indicates very bad diving conditions!';

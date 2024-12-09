@@ -8,7 +8,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
   const [blogText, setBlogText] = useState('');
   const [blogImage, setBlogImage] = useState<File | null>(null);
 
-  // Supported file formats
   const supportedFormats = [
     'image/jpeg',
     'image/png',
@@ -23,7 +22,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
       alert(
         `Unsupported file format. Please upload one of the following: ${supportedFormats.join(', ')}`
       );
-      setBlogImage(null); // Clear the file selection
+      setBlogImage(null);
     } else {
       setBlogImage(file);
     }
@@ -42,7 +41,6 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
 
     onSubmit(blogText, blogImage);
 
-    // Reset fields after submission
     setBlogText('');
     setBlogImage(null);
   };
@@ -60,7 +58,7 @@ const CreateBlog: React.FC<CreateBlogProps> = ({ onSubmit }) => {
         />
         <input
           type='file'
-          accept={supportedFormats.join(',')} // Allow only supported formats
+          accept={supportedFormats.join(',')}
           onChange={handleFileChange}
           style={{ display: 'block', marginBottom: '10px' }}
         />

@@ -14,7 +14,6 @@ interface SetObject {
 const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
   const userId = '0000';
 
-  // State for form inputs
   const [titles, setTitles] = useState<string[]>([]);
   const [units, setUnits] = useState<string[]>([]);
   const [title, setTitle] = useState<string>('');
@@ -109,7 +108,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             handleSubmit();
           }}
         >
-          {/* Title Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Title:</label>
             <select
@@ -135,7 +133,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             )}
           </div>
 
-          {/* Date Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Date:</label>
             <input
@@ -146,7 +143,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             />
           </div>
 
-          {/* Target Weight Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Target Weight:</label>
             <input
@@ -157,7 +153,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             />
           </div>
 
-          {/* Unit Input */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Unit:</label>
             <select
@@ -183,7 +178,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             )}
           </div>
 
-          {/* Target Sets and Reps */}
           <div style={styles.fieldContainer}>
             <label style={styles.label}>Target Sets:</label>
             <input
@@ -203,7 +197,6 @@ const NewTrainingLog: FC<NewTrainingLogProps> = ({ isRunningRefreshPage }) => {
             />
           </div>
 
-          {/* Dynamic Set Inputs */}
           {setObjects.map((set, index) => (
             <div key={index} style={styles.setContainer}>
               <h4>Set {set.doneSetCount}</h4>

@@ -4,7 +4,6 @@ import {
   Route,
   useLocation,
 } from 'react-router-dom';
-import Navbar from './navigation/navigation';
 import AdminBlogManager from './pages/Admin/adminBlogManager';
 import AdminFeedbackManager from './pages/Admin/adminFeedbackManager';
 import AdminServerManager from './pages/Admin/adminServerManager';
@@ -23,14 +22,17 @@ import {
   adminLinks,
   diverLinks,
   weightlifterLinks,
+  diverUserLinks,
+  weightlifterUserLinks,
 } from './utils/componentProps';
 import NavigationBar from './components/NavigationBar';
-import { AuthProvider } from './store/authContext';
+import { AuthContext, AuthProvider } from './store/authContext';
 import BadRequest from './pages/badRequest';
 import NotFound from './pages/notFount';
 import DiverOtherProfileOverview from './pages/Diver/diverOtherProfileOverview';
 import { useParams } from 'react-router-dom';
 import WeightlifterOtherProfileOverview from './pages/Weightlifter/weightlifterOtherProfileOverview';
+import { useContext, useEffect, useState } from 'react';
 
 const DiverOtherProfileOverviewWrapper = () => {
   const { username } = useParams<{ username: string }>();
@@ -52,11 +54,29 @@ const WeightlifterOtherProfileOverviewWrapper = () => {
 };
 
 function AppContent() {
+  const authInfo = useContext(AuthContext);
   const location = useLocation();
-  const shouldShowNavbarDiver = diverLinks.some(
+  const [currentDiverLinks, setCurrentDiverLinks] = useState(diverLinks);
+  const [currentWeightlifterLinks, setCurrentWeightlifterLinks] =
+    useState(weightlifterLinks);
+
+  useEffect(() => {
+    if (authInfo.authInfo.username) {
+      setCurrentDiverLinks([...diverLinks, ...diverUserLinks]);
+      setCurrentWeightlifterLinks([
+        ...weightlifterLinks,
+        ...weightlifterUserLinks,
+      ]);
+    } else {
+      setCurrentDiverLinks(diverLinks);
+      setCurrentWeightlifterLinks(weightlifterLinks);
+    }
+  }, [authInfo.authInfo.username]);
+
+  const shouldShowNavbarDiver = currentDiverLinks.some(
     link => link.path === location.pathname
   );
-  const shouldShowNavbarWeightlifter = weightlifterLinks.some(
+  const shouldShowNavbarWeightlifter = currentWeightlifterLinks.some(
     link => link.path === location.pathname
   );
   const shouldShowNavbarAdmin = adminLinks.some(
@@ -65,10 +85,9 @@ function AppContent() {
 
   return (
     <div>
-      {location.pathname === '/' && <Navbar />}
-      {shouldShowNavbarDiver && <NavigationBar links={diverLinks} />}
+      {shouldShowNavbarDiver && <NavigationBar links={currentDiverLinks} />}
       {shouldShowNavbarWeightlifter && (
-        <NavigationBar links={weightlifterLinks} />
+        <NavigationBar links={currentWeightlifterLinks} />
       )}
       {shouldShowNavbarAdmin && <NavigationBar links={adminLinks} />}
 

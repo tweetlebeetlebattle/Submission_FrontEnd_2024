@@ -15,15 +15,13 @@ const BasicModal: React.FC<BasicModalProps> = ({
   isOpen,
   onClose,
 }) => {
-  if (!isOpen) return null; // Don't render the modal if it's closed
+  if (!isOpen) return null;
 
   return (
     <div style={backdropStyle} onClick={onClose}>
       <div style={modalStyle} onClick={e => e.stopPropagation()}>
-        {/* Modal Header */}
         <h2>{title}</h2>
 
-        {/* Modal Button */}
         <button onClick={onSubmit} style={buttonStyle}>
           {buttonLabel}
         </button>
@@ -32,7 +30,6 @@ const BasicModal: React.FC<BasicModalProps> = ({
   );
 };
 
-// Styles for the modal components
 const backdropStyle: React.CSSProperties = {
   position: 'fixed',
   top: 0,

@@ -1,5 +1,6 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { AuthContext, useAuth } from '../store/authContext';
 
 type PageLink = {
   path: string;
@@ -11,12 +12,26 @@ interface NavbarProps {
 }
 
 const NavigationBar: React.FC<NavbarProps> = ({ links }) => {
+  const { removeInfo } = useAuth();
+  const authInfo = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    removeInfo();
+    navigate('/');
+  };
+
   return (
     <nav style={navStyle}>
       <div>
         <Link to='/' style={homeLinkStyle}>
           Home
         </Link>
+        {authInfo.authInfo.username && (
+          <button onClick={handleLogout} style={logoutButtonStyle}>
+            Logout
+          </button>
+        )}
       </div>
       <div>
         {links.map(link => (
@@ -31,7 +46,6 @@ const NavigationBar: React.FC<NavbarProps> = ({ links }) => {
 
 export default NavigationBar;
 
-// Style Definitions
 const navStyle: React.CSSProperties = {
   display: 'flex',
   justifyContent: 'space-between',
@@ -53,4 +67,13 @@ const homeLinkStyle: React.CSSProperties = {
 const otherLinkStyle: React.CSSProperties = {
   marginLeft: '20px',
   ...linkStyle,
+};
+
+const logoutButtonStyle: React.CSSProperties = {
+  marginLeft: '20px',
+  backgroundColor: 'transparent',
+  border: 'none',
+  color: 'black',
+  cursor: 'pointer',
+  textDecoration: 'underline',
 };
