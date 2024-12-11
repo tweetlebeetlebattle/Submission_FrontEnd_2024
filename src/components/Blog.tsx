@@ -86,6 +86,12 @@ const Blog: React.FC<BlogPostProps> = ({ blog, handleCreateComment }) => {
 
     setCommentText('');
     setCommentImage(null);
+
+    const fileInput =
+      document.querySelector<HTMLInputElement>("input[type='file']");
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
 
   return (

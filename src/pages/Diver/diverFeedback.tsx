@@ -17,6 +17,7 @@ const DiverFeedback = () => {
     latitude: null,
     longitude: null,
   });
+  const [isFetchingLocation, setIsFetchingLocation] = useState<boolean>(false);
   const [waveHeight, setWaveHeight] = useState<number | null>(null);
   const [waveUnit, setWaveUnit] = useState<string | null>(null);
   const [temp, setTemp] = useState<number | null>(null);
@@ -54,7 +55,7 @@ const DiverFeedback = () => {
           console.error('Unexpected response format:', response);
         }
       } catch (error) {
-        console.error('Error fetching locations:', error);
+        console.error('Error fetching units:', error);
       }
     };
     fetchOptions();
@@ -69,15 +70,18 @@ const DiverFeedback = () => {
 
   const handleLocationFetch = () => {
     if (navigator.geolocation) {
+      setIsFetchingLocation(true);
       navigator.geolocation.getCurrentPosition(
         position => {
           setLocation({
             latitude: position.coords.latitude,
             longitude: position.coords.longitude,
           });
+          setIsFetchingLocation(false);
         },
         () => {
           alert('Unable to retrieve your location');
+          setIsFetchingLocation(false);
         }
       );
     } else {
@@ -108,6 +112,18 @@ const DiverFeedback = () => {
       );
 
       alert('Feedback sent successfully!');
+
+      // Reset the form to initial state
+      setText('');
+      setFile(null);
+      setLocation({ latitude: null, longitude: null });
+      setWaveHeight(null);
+      setWaveUnit(null);
+      setTemp(null);
+      setTempUnit(null);
+      setWindSpeed(null);
+      setWindUnit(null);
+      setSelectedLocation('');
     } catch (error) {
       console.error('Error submitting feedback:', error);
       alert('Failed to send feedback.');
@@ -134,7 +150,15 @@ const DiverFeedback = () => {
           style={textareaStyle}
         />
         <input type='file' onChange={handleFileChange} style={inputStyle} />
-        <button onClick={handleLocationFetch} style={buttonStyle}>
+        <button
+          onClick={handleLocationFetch}
+          style={{
+            ...buttonStyle,
+            backgroundColor: isFetchingLocation ? '#ccc' : '#007bff',
+            cursor: isFetchingLocation ? 'not-allowed' : 'pointer',
+          }}
+          disabled={isFetchingLocation}
+        >
           Get Location
         </button>
 

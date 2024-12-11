@@ -430,6 +430,7 @@ const apiTerminal = {
     navigate: (path: string, state?: any) => void
   ) {
     try {
+      console.log(authorization);
       const response = fetch(
         '/api/Weightlifter/FetchAllUserTrainingAndUniversalLogs',
         authorization

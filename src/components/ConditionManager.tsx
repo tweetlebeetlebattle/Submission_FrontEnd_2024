@@ -16,27 +16,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
   onToggleMakePublic,
   onToggleVisible,
 }) => {
-  const [dateTime, setDateTime] = useState<string>(
-    new Date().toISOString().slice(0, 16)
-  );
-  const [inputValue, setInputValue] = useState<string>('');
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  const handleSubmit = () => {
-    if (inputValue.trim() === '') {
-      alert('Input value cannot be empty');
-      return;
-    }
-    setIsModalOpen(true);
-  };
-
-  const handleConfirmSubmit = () => {
-    console.log('DateTime:', dateTime);
-    console.log('Input Value:', inputValue);
-    alert(`Submitted!\nDateTime: ${dateTime}\nInput Value: ${inputValue}`);
-    setIsModalOpen(false);
-  };
-
   return (
     <div
       style={{
@@ -71,40 +50,6 @@ const ConditionManager: React.FC<ConditionManagerProps> = ({
           />
         </label>
       </div>
-
-      <div style={{ marginBottom: '10px' }}>
-        <label>
-          Select Date & Time:
-          <input
-            type='datetime-local'
-            value={dateTime}
-            onChange={e => setDateTime(e.target.value)}
-            style={{ marginLeft: '10px' }}
-          />
-        </label>
-      </div>
-
-      <div style={{ marginBottom: '10px' }}>
-        <label>
-          Enter Value:
-          <input
-            type='text'
-            value={inputValue}
-            onChange={e => setInputValue(e.target.value)}
-            style={{ marginLeft: '10px' }}
-          />
-        </label>
-      </div>
-
-      <button onClick={handleSubmit}>Submit</button>
-
-      <BasicModal
-        title='Confirm Submission'
-        buttonLabel='Confirm'
-        onSubmit={handleConfirmSubmit}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
     </div>
   );
 };
